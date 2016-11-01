@@ -2,7 +2,7 @@ Package: adapter
 Type: Package
 Version: 0.0.0.9000
 Title: R package for working with data from the CODES Research Lab Adaptability simulation
-Description: In collaboration with the Defence Science and Technology Group (Australia),'
+Description: In collaboration with the Defence Science and Technology Group (Australia),
     the CODES Research Lab has developed a simulation for assessing the adaptability of teams
     facing challenging conditions. This R package supports the management and analysis of data
     generated from this simulation.
