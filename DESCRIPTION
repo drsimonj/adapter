@@ -13,3 +13,4 @@ URL: https://github.com/drsimonj/adapter
 BugReports: https://github.com/drsimonj/adapter/issues
 LazyData: TRUE
 License: Apache 2.0
+Imports: tidyverse (>= 1.0.0)
