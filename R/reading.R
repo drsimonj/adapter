@@ -18,7 +18,9 @@
 #' @param stream_dir Character string defining the directory in which stream log
 #'   files exist.
 #' @param col_names Vector of column names to be used.
-#' @param is_numeric Boolean indicating whether a stream variable is numeric.
+#' @param is_numeric Indicate whether a stream variable is numeric and,
+#'   therefore, should be convereted to numeric. Can be a boolean value
+#'   (TRUE/FALSE) or a character vector of numeric variable names to seach in.
 #' @return \code{\link[tibble]{tibble}}
 #' @name read_log
 NULL
@@ -70,8 +72,16 @@ read_stream <- function(user_dir,
   stream <- stringr::str_c(user_dir, stream_dir, file_name) %>%
               readr::read_tsv(col_names = c("time", stream_var), col_types = "dc")  # Note need to import all values as characters
 
-  if (is_numeric) {
-    stream[[stream_var]] <- as.numeric(stream[[stream_var]])
+  if (is.character(is_numeric)) {
+    is_numeric <- stream_var %in% is_numeric
+  }
+
+  if (is.logical(is_numeric)) {
+    if (is_numeric) {
+      stream[[stream_var]] <- as.numeric(stream[[stream_var]])
+    }
+  } else {
+    stop("is_numeric is not a valid boolean or character string format.")
   }
 
   stream

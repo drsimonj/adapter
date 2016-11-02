@@ -25,7 +25,9 @@ read_stream(user_dir, file_name, stream_dir = "streams/", is_numeric = TRUE)
 \item{stream_dir}{Character string defining the directory in which stream log
 files exist.}
 
-\item{is_numeric}{Boolean indicating whether a stream variable is numeric.}
+\item{is_numeric}{Indicate whether a stream variable is numeric and,
+therefore, should be convereted to numeric. Can be a boolean value
+(TRUE/FALSE) or a character vector of numeric variable names to seach in.}
 }
 \value{
 \code{\link[tibble]{tibble}}
