@@ -1,20 +1,53 @@
-#' Read participant's session file
+#' Read a user's log file
+#'
+#' Read a user's session or events log file that are expected to be contained in
+#' the top-level of the user's log files directory. These files are assumed to
+#' be tab-separated values without variable headers. Uniquely, they are assumed
+#' to contain:
+#'
+#' \describe {
+#'  \item{session}{Variable names and values}
+#'  \item{events}{A timestamp and an event name. Tab-separated details about the
+#'  event can follow in some cases.}
+#' }
 #'
 #' @param user_dir Character string defining the user's log-file directory
-#' @param session_file Character string of the session file name
-#' @inheritParams readr::read_tsv
-#' @param ... Additional arguments to pass to \code{\link[readr]{read_tsv}}
-#' @return A \code{\link[tibble]{tibble}}
+#' @param file_name Character string of the file name
+#' @param col_names Vector of column names to be used.
+#' @return \code{\link[tibble]{tibble}}
+#' @name read_log
+NULL
+
+#' @rdname read_log
 #' @export
 read_session <- function(user_dir,
-                         session_file = "session.tsv",
-                         col_names = c("var", "info"),
-                         ...) {
+                         file_name = "session.tsv",
+                         col_names = c("var", "info")) {
 
   # Append "/" to directory if required
-  if (!stringr::str_detect(user_dir, "/$"))
-    user_dir <- stringr::str_c(user_dir, "/")
+  user_dir <- end_with_slash(user_dir)
+  #if (!stringr::str_detect(user_dir, "/$"))
+  #  user_dir <- stringr::str_c(user_dir, "/")
 
   # Read file
-  readr::read_tsv(stringr::str_c(user_dir, session_file), col_names = col_names)
+  readr::read_tsv(stringr::str_c(user_dir, file_name), col_names = col_names)
+}
+
+#' @rdname read_log
+#' @export
+read_events <- function(user_dir,
+                        file_name = "events.tsv",
+                        col_names = c("time", "event", "detail")) {
+
+  # Append "/" to directory if required
+  user_dir <- end_with_slash(user_dir)
+  #if (!stringr::str_detect(user_dir, "/$"))
+  #  user_dir <- stringr::str_c(user_dir, "/")
+
+  events <- readr::read_lines(stringr::str_c(user_dir, file_name)) %>%
+    stringr::str_split_fixed("\t", 3) %>%
+    tibble::as_tibble()
+  names(events) <- c("time", "event", "detail")  # Give variables names
+  events <- events %>% dplyr::mutate(detail = stringr::str_split(detail, "\t"))  # Split details into a list (where appropriate)
+  events
 }
