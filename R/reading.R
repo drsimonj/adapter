@@ -1,10 +1,9 @@
 #' Read a user's single log file
 #'
 #' Read a user's session or events log file that are expected to be contained in
-#' the top-level of the user's log files directory, or a single stream file
-#' expected to be in the streams/ directory. These files are assumed to be
-#' tab-separated values without variable headers. Uniquely, they are assumed to
-#' contain:
+#' the top-level of the user's log files directory, or stream files expected to
+#' be in the streams/ directory. These files are assumed to be tab-separated
+#' values without variable headers. Uniquely, they are assumed to contain:
 #'
 #' \describe {
 #'  \item{session}{Variable names and values}
@@ -12,6 +11,9 @@
 #'  event can follow in some cases.}
 #'  \item{stream}{A timestamp and a value.}
 #' }
+#'
+#' All functions read in a single file except for read_all_streams, which reads
+#' all the stream files in a directory and merges them into a single tibble.
 #'
 #' @param user_dir Character string defining the user's log-file directory
 #' @param file_name Character string of the file name. Must include extension such as .tsv
@@ -21,6 +23,7 @@
 #' @param is_numeric Indicate whether a stream variable is numeric and,
 #'   therefore, should be convereted to numeric. Can be a boolean value
 #'   (TRUE/FALSE) or a character vector of numeric variable names to seach in.
+#' @inheritParams list.files
 #' @return \code{\link[tibble]{tibble}}
 #' @name read_log
 NULL
@@ -85,4 +88,36 @@ read_stream <- function(user_dir,
   }
 
   stream
+}
+
+
+#' @rdname read_log
+#' @export
+read_all_streams <- function(user_dir,
+                             pattern = "tsv$",
+                             stream_dir = "streams/",
+                             is_numeric = c("input_brake", "input_horizontal", "input_vertical")) {
+
+  # Append "/" to directorys if required
+  user_dir <- end_with_slash(user_dir)
+  stream_dir <- end_with_slash(stream_dir)
+
+  # Find all stream files
+  stream_files <- list.files(stringr::str_c(user_dir, stream_dir), pattern = "tsv$")
+
+  # Read in all stream files and merge into single tibble
+  streams <- purrr::map(stream_files,
+                        ~ read_stream(user_dir = user_dir,
+                                      file_name = .,
+                                      stream_dir = stream_dir,
+                                      is_numeric = is_numeric)) %>%
+              # Merge all streams into a single data frame
+              purrr::map(~ tibble::rownames_to_column(., var = "i")) %>%
+              purrr::reduce(dplyr::full_join, by = "i") %>%
+              # Compute time as the mean from each stream
+              nest_duplicated() %>%
+              dplyr::mutate_if(is.list, funs(map_dbl(., na_mean))) %>%    ## NOTE - need to explicitly import purrr::map_dbl due to bug
+              # Select/order/arrange columns
+              dplyr::select(time, dplyr::everything(), -i) %>%
+              dplyr::arrange(time)
 }
