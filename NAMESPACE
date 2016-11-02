@@ -3,4 +3,5 @@
 export(end_with_slash)
 export(read_events)
 export(read_session)
+export(read_stream)
 importFrom(magrittr,"%>%")
