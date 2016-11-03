@@ -16,3 +16,6 @@ License: Apache 2.0
 Imports:
     tidyverse (>= 1.0.0)
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
