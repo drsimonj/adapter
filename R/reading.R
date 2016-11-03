@@ -1,21 +1,28 @@
-#' Read a user's single log file
+#' Read user's log files
 #'
-#' Read a user's session or events log file that are expected to be contained in
-#' the top-level of the user's log files directory, or stream files expected to
-#' be in the streams/ directory.
+#' These functions help to read a user's session, events, or stream log files.
+#' read_logs() is a wrapper function that uses the default values of all other
+#' functions to read all log files into a single list. If this fails, the log
+#' files can be read separately using the other functions and by adjusting the
+#' variables appropriately.
 #'
-#' The files that can be read are assumed to be tab-separated values without
-#' variable headers. Uniquely, they are assumed to contain:
+#' All files that can be read are assumed to be tab-separated values without
+#' variable headers. Uniquely, they are assumed to:
 #'
 #' \describe{
-#'  \item{session}{Variable names and values}
-#'  \item{events}{A timestamp and an event name. Tab-separated details about the
-#'  event can follow in some cases.}
-#'  \item{stream}{A timestamp and a value.}
+#'  \item{session}{Appear in top-level of user's log file directory; contain
+#'  variable names and values}
+#'  \item{events}{Appear in top-level of user's log file directory; contain a
+#'  timestamp and an event name (tab-separated details about the event can
+#'  follow in some cases).}
+#'  \item{stream}{Appear in streams/ directory of user's log file directory;
+#'  contain a timestamp and a value.}
 #' }
 #'
-#' All functions read in a single file except for read_all_streams, which reads
-#' all the stream files in a directory and merges them into a single tibble.
+#' Most functions are helper functions to read in a single file.
+#' read_all_streams, however, reads all the stream files in a directory and
+#' merges them into a single tibble. Also, read_logs will make use of all the
+#' functions to read all log files into a list.
 #'
 #' @param user_dir Character string defining the user's log-file directory
 #' @param file_name Character string of the file name. Must include extension such as .tsv
@@ -30,11 +37,22 @@
 #'   boolean value (TRUE/FALSE) or a character vector of variable names to
 #'   convert if present.
 #' @inheritParams base::list.files
-#' @return \code{\link[tibble]{tibble}}
-#' @name read_log
-NULL
+#' @return read_logs with return a list with a "user" S3 class, with three
+#'   tibbles (session, events and streams). All others will return a single
+#'   \code{\link[tibble]{tibble}}.
+#' @name read_logs
+#' @export
+read_logs <- function(user_dir) {
+  session <- read_session(user_dir = user_dir)
+  events  <- read_events(user_dir = user_dir)
+  streams <- read_all_streams(user_dir = user_dir)
 
-#' @rdname read_log
+  l <- list(session = session, events = events, streams = streams)
+  class(l) <- c("user", class(l))
+  l
+}
+
+#' @rdname read_logs
 #' @export
 read_session <- function(user_dir,
                          file_name = "session.tsv",
@@ -52,7 +70,7 @@ read_session <- function(user_dir,
   readr::read_tsv(stringr::str_c(user_dir, file_name), col_names = col_names)
 }
 
-#' @rdname read_log
+#' @rdname read_logs
 #' @export
 read_events <- function(user_dir,
                         file_name = "events.tsv",
@@ -74,7 +92,7 @@ read_events <- function(user_dir,
   events
 }
 
-#' @rdname read_log
+#' @rdname read_logs
 #' @export
 read_stream <- function(user_dir,
                         file_name,
@@ -132,7 +150,7 @@ read_stream <- function(user_dir,
   stream
 }
 
-#' @rdname read_log
+#' @rdname read_logs
 #' @export
 read_all_streams <- function(user_dir,
                              pattern = "tsv$",
