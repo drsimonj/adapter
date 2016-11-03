@@ -85,3 +85,23 @@ vec3_to_vec <- function(vec3, is_numeric = TRUE) {
     vec <- purrr::map(vec, as.numeric)
   vec
 }
+
+#' Check whether file exists and return TRUE or determined value
+#'
+#' Take various strings that combine to make a file path and check whether that
+#' file exists. If it does, return TRUE. If not, return the value return_if_not.
+#'
+#' @param ... Character strings that will be concantenated to create a file path
+#' @param warning_if_not Boolean indicating whether a warning should be printed
+#'   if the file does not exist
+#' @export
+check_file_exists <- function(..., warning_if_not = FALSE) {
+  path <- stringr::str_c(...)
+  exists <- file.exists(path)
+
+  if (!exists & warning_if_not) {
+    warning("File does not exist:", path)
+  }
+
+  exists
+}

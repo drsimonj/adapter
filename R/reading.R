@@ -43,6 +43,11 @@ read_session <- function(user_dir,
   # Append "/" to directory if required
   user_dir <- end_with_slash(user_dir)
 
+  # Check file exists
+  if(!check_file_exists(user_dir, file_name)) {
+    return (NA)
+  }
+
   # Read file
   readr::read_tsv(stringr::str_c(user_dir, file_name), col_names = col_names)
 }
@@ -55,6 +60,11 @@ read_events <- function(user_dir,
 
   # Append "/" to directory if required
   user_dir <- end_with_slash(user_dir)
+
+  # Check file exists
+  if(!check_file_exists(user_dir, file_name)) {
+    return (NA)
+  }
 
   events <- readr::read_lines(stringr::str_c(user_dir, file_name)) %>%
     stringr::str_split_fixed("\t", 3) %>%
@@ -72,12 +82,17 @@ read_stream <- function(user_dir,
                         is_numeric = TRUE,
                         is_vec3    = FALSE) {
 
-  # Get variable name
-  stream_var <- stringr::str_replace(file_name, "\\..*$", "")
-
   # Append "/" to directorys if required
   user_dir <- end_with_slash(user_dir)
   stream_dir <- end_with_slash(stream_dir)
+
+  # Check file exists
+  if(!check_file_exists(user_dir, stream_dir, file_name)) {
+    return (NA)
+  }
+
+  # Get variable name
+  stream_var <- stringr::str_replace(file_name, "\\..*$", "")
 
   stream <- stringr::str_c(user_dir, stream_dir, file_name) %>%
               readr::read_tsv(col_names = c("time", stream_var), col_types = "dc")  # Note need to import all values as characters
@@ -125,15 +140,14 @@ read_all_streams <- function(user_dir,
                              is_numeric = c("input_brake", "input_horizontal", "input_vertical"),
                              is_vec3    = c("position", "rotation", "velocity")) {
 
-  # Return NA if the stream directory does not exist
-  if(!file.exists(stringr::str_c(user_dir, stream_dir))) {
-    warning("Stream directory does not exist")
-    NA
-  }
-
   # Append "/" to directorys if required
   user_dir <- end_with_slash(user_dir)
   stream_dir <- end_with_slash(stream_dir)
+
+  # Check streams directory exists
+  if(!check_file_exists(user_dir, stream_dir)) {
+    return (NA)
+  }
 
   # Find all stream files
   stream_files <- list.files(stringr::str_c(user_dir, stream_dir), pattern = "tsv$")
