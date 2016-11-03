@@ -58,7 +58,7 @@ nest_duplicated <- function(df, suffixes = "\\.[xy]") {
 #' TRUE, this results in NaN if all values were NA. This function handles such
 #' occassions by returning NA instead.
 #'
-#' @inheritParams mean
+#' @inheritParams base::mean
 #' @return Mean of non-missing values or,  if all values were missing, NA.
 #' @export
 na_mean <- function(x, na.rm = TRUE, ...) {

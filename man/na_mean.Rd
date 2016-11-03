@@ -6,6 +6,17 @@
 \usage{
 na_mean(x, na.rm = TRUE, ...)
 }
+\arguments{
+\item{x}{An \R object.  Currently there are methods for
+    numeric/logical vectors and \link[=Dates]{date},
+    \link{date-time} and \link{time interval} objects.  Complex vectors
+    are allowed for \code{trim = 0}, only.}
+
+\item{na.rm}{a logical value indicating whether \code{NA}
+    values should be stripped before the computation proceeds.}
+
+\item{...}{further arguments passed to or from other methods.}
+}
 \value{
 Mean of non-missing values or,  if all values were missing, NA.
 }

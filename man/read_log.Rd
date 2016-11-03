@@ -14,10 +14,12 @@ read_session(user_dir, file_name = "session.tsv", col_names = c("var",
 read_events(user_dir, file_name = "events.tsv", col_names = c("time",
   "event", "detail"))
 
-read_stream(user_dir, file_name, stream_dir = "streams/", is_numeric = TRUE)
+read_stream(user_dir, file_name, stream_dir = "streams/", is_numeric = TRUE,
+  is_vec3 = FALSE)
 
 read_all_streams(user_dir, pattern = "tsv$", stream_dir = "streams/",
-  is_numeric = c("input_brake", "input_horizontal", "input_vertical"))
+  is_numeric = c("input_brake", "input_horizontal", "input_vertical"),
+  is_vec3 = c("position", "rotation", "velocity"))
 }
 \arguments{
 \item{user_dir}{Character string defining the user's log-file directory}
@@ -31,7 +33,15 @@ files exist.}
 
 \item{is_numeric}{Indicate whether a stream variable is numeric and,
 therefore, should be convereted to numeric. Can be a boolean value
-(TRUE/FALSE) or a character vector of numeric variable names to seach in.}
+(TRUE/FALSE) or a character vector of variable names to convert if present.}
+
+\item{is_vec3}{Indicate whether a stream variable is a Vector3 value in Unity
+and, therefore, should be convereted to a vector of 3 values. Can be a
+boolean value (TRUE/FALSE) or a character vector of variable names to
+convert if present.}
+
+\item{pattern}{an optional \link{regular expression}.  Only file names
+    which match the regular expression will be returned.}
 }
 \value{
 \code{\link[tibble]{tibble}}
@@ -39,11 +49,13 @@ therefore, should be convereted to numeric. Can be a boolean value
 \description{
 Read a user's session or events log file that are expected to be contained in
 the top-level of the user's log files directory, or stream files expected to
-be in the streams/ directory. These files are assumed to be tab-separated
-values without variable headers. Uniquely, they are assumed to contain:
+be in the streams/ directory.
 }
 \details{
-\describe {
+The files that can be read are assumed to be tab-separated values without
+variable headers. Uniquely, they are assumed to contain:
+
+\describe{
  \item{session}{Variable names and values}
  \item{events}{A timestamp and an event name. Tab-separated details about the
  event can follow in some cases.}
