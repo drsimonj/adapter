@@ -189,7 +189,7 @@ read_all_streams <- function(user_dir,
               dplyr::arrange(time)
 
   # Convert Vector 3 variables to lists
-  streams <- streams %>% dplyr::mutate_at(c("position", "rotation", "velocity"), vec3_to_vec)
+  streams <- streams %>% dplyr::mutate_at(is_vec3, vec3_to_vec)
 
   streams
 }
