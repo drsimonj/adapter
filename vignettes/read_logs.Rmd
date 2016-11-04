@@ -1,6 +1,6 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "Reading log files"
+author: "Dr Simon Jackson"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,50 +9,41 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+This vignette will describe how to read a user's log files with various functions provided in the adapter package.
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+## Log files and folders
 
-## Vignette Info
+At the time this vignette was written, the adaptability simulation generated users' log files with particular structures and formats. It is important to understand this, as it guides how the reading functions work.
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+### How files and folders are arranged and formatted
 
-## Styles
+A user's log-files directory (folder containing all of their log files) has three things in it:
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+- A file containing session information: `session.tsv`
+- A file containing logs of discrete events: `events.tsv`
+- A directory (folder): `streams/`
+  - Within `streams/` there may be multiple files that each refer to a variable that was logged in a continuous/streaming fashion (every frame). For example, in this folder we might find `input_brake.tsv`, which is a continuous stream of the value of the driver's brake.
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+All log files are created in a tab-separated values (.tsv) format without headers. This helps to minimise file size and maximise compatability across software packages.
 
-## Figures
+### The session file
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+The session file (`session.tsv`) contains general information about the session. For example, the local time when the simulation was started, and the user's id. It is effectively a key-value table. One column contains variables names, and a second contains its value.
 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
-```
+### The events file
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+The events file (`events.tsv`) contains a log of discrete events that occur within the simulation. For example, the time at which a new lap begins, or every time the driver collides with an object, and so on. Each row logs a single event. Each row contains at least two columns. The first column is a timestamp of when the event occured (see [timestamp format](#timestamp-format)). The second column is the event name. Any other values that appear beyond these two columns provides some additional information about the event.
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+### Stream files
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+Files that appear in the `streams/` directory each log a particular variable every single frame of the simulation. These files are therefore reserved for variables like the accelerator, the steering angle, the velocity of the car, and so on. In these files, each row represents a variable's value at a particular point in time, and contains two columns. The first is a timestamp (see [timestamp format](#timestamp-format)). The second is the variable's value. The name of the file indicates the variable that is being logged.
 
-## More Examples
+### Timestamp format
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+Timestamps are generally formatted to be epoch time to 100th of a millisecond. Therefore, to convert this to regular epoch time (or some other time stamp), divide it by 100 (to get to millisecond epoch time), and do regular conversion.
 
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
+## Functions for reading log files
 
-Also a quote using `>`:
+The adapter package provides 
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+
