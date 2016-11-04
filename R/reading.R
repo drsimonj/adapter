@@ -53,10 +53,12 @@ read_logs <- function(user_dir) {
 }
 
 #' @rdname read_logs
+#' @inheritParams lubridate::dmy_hms
 #' @export
 read_session <- function(user_dir,
                          file_name = "session.tsv",
-                         col_names = c("var", "info")) {
+                         col_names = c("var", "info"),
+                         tz        = "Australia/Sydney") {
 
   # Append "/" to directory if required
   user_dir <- end_with_slash(user_dir)
@@ -67,7 +69,16 @@ read_session <- function(user_dir,
   }
 
   # Read file
-  readr::read_tsv(stringr::str_c(user_dir, file_name), col_names = col_names)
+  session <- readr::read_tsv(stringr::str_c(user_dir, file_name), col_names = col_names)
+
+  # Convert to wide format so each variable is its own colum
+  session <- session %>% tidyr::spread(var, info)
+
+  # Convert date variable to date (if it exists)
+  if ("local_start_time" %in% names(session))
+    session <- dplyr::mutate_at(session, "local_start_time", lubridate::dmy_hms, tz = tz)
+
+  session
 }
 
 #' @rdname read_logs

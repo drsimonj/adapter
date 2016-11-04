@@ -27,7 +27,7 @@ All log files are created in a tab-separated values (.tsv) format without header
 
 ### Session file
 
-The session file (`session.tsv`) contains general information about the session. For example, the local time when the simulation was started, and the user's id. It is effectively a key-value table. One column contains variables names, and a second contains its value.
+The session file (`session.tsv`) contains general information about the session. For example, the local time when the simulation was started, and the user's id. It is effectively a key-value table. One column contains variables names, and a second contains its value. This is converted to a wide format after being read.
 
 ### Events file
 

@@ -11,7 +11,7 @@
 read_logs(user_dir)
 
 read_session(user_dir, file_name = "session.tsv", col_names = c("var",
-  "info"))
+  "info"), tz = "Australia/Sydney")
 
 read_events(user_dir, file_name = "events.tsv", col_names = c("time",
   "event", "detail"))
@@ -29,6 +29,9 @@ read_all_streams(user_dir, pattern = "tsv$", stream_dir = "streams/",
 \item{file_name}{Character string of the file name. Must include extension such as .tsv}
 
 \item{col_names}{Vector of column names to be used.}
+
+\item{tz}{a character string that specifies which time zone to parse the date with. The string
+must be a time zone that is recognized by the user's OS.}
 
 \item{stream_dir}{Character string defining the directory in which stream log
 files exist.}
