@@ -189,6 +189,7 @@ read_all_streams <- function(user_dir,
               dplyr::arrange(time)
 
   # Convert Vector 3 variables to lists
+  is_vec3 <- names(streams)[names(streams) %in% is_vec3]  # include variables only if they exist
   streams <- streams %>% dplyr::mutate_at(is_vec3, vec3_to_vec)
 
   streams
