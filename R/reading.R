@@ -205,3 +205,93 @@ read_all_streams <- function(user_dir,
 
   streams
 }
+
+
+#' Read all users logs from a data directory
+#'
+#' @param data_dir Directory containing all group data  directories. Must be
+#'   organised in particular way.
+#' @return List of user log-file data lists
+#' @export
+read_all  <- function(data_dir) {
+  # Group directories
+  group_dirs <- file.path(data_dir, list.files("data"), "logs")
+
+  # User directories
+  user_dirs <- purrr::map(group_dirs, ~ file.path(., list.files(.))) %>% unlist()
+
+  # User logs
+  users <- purrr::map(user_dirs, read_logs)
+
+  # Get user ids
+  user_ids <- map_chr(users, ~ .$session$user_id)
+
+  # Find any duplicated ids
+  dup_users <- names(table(user_ids))[table(user_ids) > 1]
+
+  # FOR NOW*: Remove any users with duplicate ids
+  users <- users[user_ids != dup_users]
+  user_ids <- user_ids[user_ids != dup_users]
+
+  # Name user list
+  names(users) <- user_ids
+
+  # Add role and group information ------------------------------------------
+
+  # Create a tibble of user info
+  user_info <- tibble::tibble(id = user_ids)
+
+  # Split id into relevant info
+  user_info <- tidyr::separate(user_info, id, into = c("session_time", "group", "seat"), remove = FALSE)
+
+  # Convert session_time into a date object
+  user_info <- user_info %>% dplyr::mutate(session_time = lubridate::ymd_h(session_time, tz = "Australia/Sydney"))
+
+  # Compute role by searching for "2" in the seat
+  # becase driver were seated in g2 and d2, drone operators in g1 and d1
+  user_info <- user_info %>% dplyr::mutate(role = ifelse(grepl("2", seat), "driver", "drone"))
+
+  # Check that the number of drivers/drones per group makes sense
+  ns <- user_info %>%
+    dplyr::group_by(session_time, group) %>%
+    dplyr::summarise(driver = sum(role == "driver"),
+                     drone = sum(role == "drone"))
+
+  if (all(ns$driver == 1)) {
+    cat("Check for one driver in each group...\t\tOK\n")
+  } else {
+    cat("Check for one driver in each group...\t\tERROR\n")
+  }
+
+  if (all(ns$drone == 0 | ns$drone == 1)) {
+    cat("Check for zero or one drone operators in each group...\t\tOK\n")
+  } else {
+    cat("Check for zero or one drone operators in each group...\t\tERROR\n")
+  }
+
+  # Determine teammates and other session information
+  user_teams <- user_info %>%
+    dplyr::group_by(session_time, group) %>%
+    dplyr::summarise(driver = id[role == "driver"],
+                     drone  = ifelse("drone" %in% role, id[role == "drone"], "NA")) %>%
+    dplyr::mutate(drone = dplyr::na_if(drone, "NA")) %>%
+    tidyr::unite(both, driver, drone, sep = " ", remove = F) %>%
+    tidyr::gather(role, id, driver, drone) %>%
+    tidyr::drop_na() %>%
+    tidyr::separate(both, into = c("team_driver", "team_drone"), sep = " ") %>%
+    dplyr::mutate(teammate_id = ifelse(role == "driver", team_drone, team_driver)) %>%
+    dplyr::select(-team_driver, -team_drone) %>%
+    dplyr::mutate(teammate_id = dplyr::na_if(teammate_id, "NA")) %>%
+    dplyr::ungroup()
+
+  # Append information to user and add role class
+  for(i in user_ids) {
+    users[[i]]$session <- user_teams %>%
+      dplyr::filter(id == i) %>%
+      dplyr::bind_cols(users[[i]]$session)
+
+    class(users[[i]]) <- c(users[[i]]$session$role, class(users[[i]]))
+  }
+
+  users
+}
