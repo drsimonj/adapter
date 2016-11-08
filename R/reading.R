@@ -229,9 +229,12 @@ read_all  <- function(data_dir) {
   # Find any duplicated ids
   dup_users <- names(table(user_ids))[table(user_ids) > 1]
 
-  # FOR NOW*: Remove any users with duplicate ids
-  users <- users[user_ids != dup_users]
-  user_ids <- user_ids[user_ids != dup_users]
+  # Remove any users with duplicate ids *FOR NOW
+  if (length(dep_users) > 0) {
+    warning("Duplicate user ids found. Removing data for the following:", dup_users)
+    users <- users[user_ids != dup_users]
+    user_ids <- user_ids[user_ids != dup_users]
+  }
 
   # Name user list
   names(users) <- user_ids
