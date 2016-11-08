@@ -100,7 +100,7 @@ read_events <- function(user_dir,
     tibble::as_tibble()
   names(events) <- c("time", "event", "detail")  # Give variables names
   events <- events %>% dplyr::mutate(detail = stringr::str_split(detail, "\t"),
-                                     time   = as.integer(time))  # Split details into a list (where appropriate)
+                                     time   = as.numeric(time))  # Split details into a list (where appropriate)
   events
 }
 
@@ -125,7 +125,7 @@ read_stream <- function(user_dir,
   stream_var <- stringr::str_replace(file_name, "\\..*$", "")
 
   stream <- stringr::str_c(user_dir, stream_dir, file_name) %>%
-              readr::read_tsv(col_names = c("time", stream_var), col_types = "ic")  # Note need to import all values as characters
+              readr::read_tsv(col_names = c("time", stream_var), col_types = "dc")  # Note need to import all values as characters
 
   # Handle vec3 OR numeric, but not both (if boolean values used)
   if(is.logical(is_vec3) && is_vec3) {
