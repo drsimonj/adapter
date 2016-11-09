@@ -11,6 +11,6 @@
 #' @param full_list The full user list to be passed on to clean drone data only.
 #' @export
 #' @return Original user obejct with lap information handled and cleaned.
-clean_laps <- function(user, n_laps = 5, full_list) {
+clean_laps <- function(user, n_laps = 5, full_list = NULL) {
   UseMethod("clean_laps")
 }

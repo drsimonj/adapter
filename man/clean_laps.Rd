@@ -4,7 +4,7 @@
 \alias{clean_laps}
 \title{Clean lap information}
 \usage{
-clean_laps(user, n_laps = 5, full_list)
+clean_laps(user, n_laps = 5, full_list = NULL)
 }
 \arguments{
 \item{user}{A list of "user" list objects created by reading functions like

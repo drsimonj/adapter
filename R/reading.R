@@ -212,9 +212,12 @@ read_all_streams <- function(user_dir,
 #'
 #' @param data_dir Directory containing all group data  directories. Must be
 #'   organised in particular way.
+#' @param clean Should user list be cleaned as well?
+#'
 #' @return List of user log-file data lists
+#'
 #' @export
-read_all  <- function(data_dir) {
+read_all  <- function(data_dir, clean = TRUE) {
   # Group directories
   group_dirs <- file.path(data_dir, list.files(data_dir), "logs")
 
@@ -304,6 +307,11 @@ read_all  <- function(data_dir) {
 
   # Add user_list class to final object
   class(users) <- c("user_list", class("user"))
+
+  # If asked, clean logs in user list
+  if (clean) {
+    users <- clean_laps(users)
+  }
 
   users
 }
