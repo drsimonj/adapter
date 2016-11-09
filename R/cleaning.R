@@ -23,6 +23,9 @@ clean_laps <- function(user, n_laps = 5) {
   # Handle streams data
   start_time <- first(user$events$time)
   end_time   <- last(user$events$time)
+  lap_times <- user$events %>%
+    dplyr::filter(event == "newlap") %>%
+    dplyr::select(time, lap)
 
   user$streams <- user$streams %>%
     dplyr::filter(dplyr::between(time, start_time, end_time)) %>%  # Remove data pre/post test laps
