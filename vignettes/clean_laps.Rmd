@@ -1,0 +1,69 @@
+---
+title: "Cleaning log files"
+author: "Dr Simon Jackson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette will describe how to clean users' log files using [functions provided in the adapter package](#functions-for-cleaning-log-files).
+
+## Logs to clean
+
+Cleaning requires user log files to have been read into R in the appropriate format. For details about how to read in log files so that they can be cleaned using adapter functions, please read the [Vignette on Reading log files](read_logs.html).
+
+To demonstrate, the following will read in a list of user log files using the `read_all()` function:
+
+```{r, message = F}
+# Create path to all user data (this is specific to this document, you'll need to create your own)
+baseLoc <- system.file(package = "adapter")
+extPath <- file.path(baseLoc, "extdata")
+path_to_user_data <- file.path(extPath, "eg_user_list/")
+
+# Load adapter package and read all user's log files
+library(adapter)
+d <- read_all(path_to_user_data)
+```
+
+We will use our list of user data, `d`, in forthcoming analyses.
+
+For later comparisons, here is the uncleaned data for one user in this list:
+
+```{r}
+d[[1]]
+```
+
+## Functions for cleaning log files
+
+The adapter package provides one function for cleaning log files:
+
+- [`clean_laps()`](#cleaning-with-clean_laps)
+
+We'll cover this below.
+
+## Cleaning with clean_laps()
+
+The purpose of `clean_laps()` is to:
+
+- Remove data before the first lap commences
+- Remove data after the final lap has ended
+- Add a `lap` column to `events` and `streams` tibbles to ease lap-based analysis (e.g., via `dplyr::group_by(lap)`).
+
+To use `clean_laps()` most efficiently, pass it a list of user data created via `read_all`. For example, using `d` from above:
+
+```{r, message = F}
+clean_d <- clean_laps(d)
+```
+
+Lets now compare the data for the first user:
+
+```{r}
+clean_d[[1]]
+```
+
+If you compare to the uncleaned version above, you'll notice that there are fewer rows in the `events` and `streams` tibbles. This is because data before lap 1 started and after lap 5 ended has been removed. You'll also notice that there is `lap` column in both of these tibbles.
+
+As a side note, `clean_laps()` will work on a single driver user's list. However, to handle drone operators, it must have the complete user list. This is because the drone operator information needs to come from his/her driver teammate (where lap information is logged originally).
