@@ -288,13 +288,18 @@ read_all  <- function(data_dir) {
     dplyr::mutate(teammate_id = dplyr::na_if(teammate_id, "NA")) %>%
     dplyr::ungroup()
 
-  # Append information to user and add role class
+  # Append information to user and add role class. Also  convert stream data to
+  # numeric for drones (as they come out as lists)
   for(i in user_ids) {
     users[[i]]$session <- user_teams %>%
       dplyr::filter(id == i) %>%
       dplyr::bind_cols(users[[i]]$session)
 
     class(users[[i]]) <- c(users[[i]]$session$role, class(users[[i]]))
+
+    if (is(users[[i]], "drone")) {
+      users[[i]]$streams <- users[[i]]$streams %>% purrr::map_df(as.numeric)
+    }
   }
 
   # Add user_list class to final object

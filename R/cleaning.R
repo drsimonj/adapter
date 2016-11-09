@@ -8,8 +8,9 @@
 #'   \code{\link{read_logs}}. Also handles single user list objects too.
 #' @param n_laps The number of laps that the participant was supposed to do in
 #'   the simulation.
+#' @param full_list The full user list to be passed on to clean drone data only.
 #' @export
 #' @return Original user obejct with lap information handled and cleaned.
-clean_laps <- function(user, n_laps = 5) {
+clean_laps <- function(user, n_laps = 5, full_list) {
   UseMethod("clean_laps")
 }

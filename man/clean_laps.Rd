@@ -4,7 +4,7 @@
 \alias{clean_laps}
 \title{Clean lap information}
 \usage{
-clean_laps(user, n_laps = 5)
+clean_laps(user, n_laps = 5, full_list)
 }
 \arguments{
 \item{user}{A list of "user" list objects created by reading functions like
@@ -12,6 +12,8 @@ clean_laps(user, n_laps = 5)
 
 \item{n_laps}{The number of laps that the participant was supposed to do in
 the simulation.}
+
+\item{full_list}{The full user list to be passed on to clean drone data only.}
 }
 \value{
 Original user obejct with lap information handled and cleaned.
