@@ -7,15 +7,18 @@
 clean_laps(user, n_laps = 5)
 }
 \arguments{
-\item{user}{A user list object created by reading functions like
-\code{\link{read_logs}}}
+\item{user}{A list of "user" list objects created by reading functions like
+\code{\link{read_logs}}. Also handles single user list objects too.}
 
 \item{n_laps}{The number of laps that the participant was supposed to do in
 the simulation.}
 }
+\value{
+Original user obejct with lap information handled and cleaned.
+}
 \description{
-This function will add a `lap` number column to the events and streams
-tibbles. It will also remove all data that precedes the start of the first
-lap, and comes after the end of the last lap.
+For driver data, add a `lap` number column to the events and streams tibbles
+and remove all data that precedes the start of the first lap, and comes after
+the end of the last lap.
 }
 

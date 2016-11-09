@@ -216,7 +216,7 @@ read_all_streams <- function(user_dir,
 #' @export
 read_all  <- function(data_dir) {
   # Group directories
-  group_dirs <- file.path(data_dir, list.files("data"), "logs")
+  group_dirs <- file.path(data_dir, list.files(data_dir), "logs")
 
   # User directories
   user_dirs <- purrr::map(group_dirs, ~ file.path(., list.files(.))) %>% unlist()
@@ -296,6 +296,9 @@ read_all  <- function(data_dir) {
 
     class(users[[i]]) <- c(users[[i]]$session$role, class(users[[i]]))
   }
+
+  # Add user_list class to final object
+  class(users) <- c("user_list", class("user"))
 
   users
 }
