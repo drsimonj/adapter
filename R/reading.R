@@ -225,7 +225,7 @@ read_all  <- function(data_dir) {
   users <- purrr::map(user_dirs, read_logs)
 
   # Get user ids
-  user_ids <- map_chr(users, ~ .$session$user_id)
+  user_ids <- purrr::map_chr(users, ~ .$session$user_id)
 
   # Find any duplicated ids
   dup_users <- names(table(user_ids))[table(user_ids) > 1]
