@@ -13,7 +13,7 @@ This vignette will describe how to clean users' log files using [functions provi
 
 ## Logs to clean
 
-Cleaning requires user log files to have been read into R in the appropriate format. For details about how to read in log files so that they can be cleaned using adapter functions, please read the [Vignette on Reading log files](read_logs.html).
+Cleaning requires user log files to have been read into R in the appropriate format. For details about how to read in log files so that they can be cleaned using adapter functions, please read the [Vignette on Reading log files](reading.html).
 
 To demonstrate, the following will read in a list of user log files using the `read_all()` function:
 
@@ -25,7 +25,7 @@ path_to_user_data <- file.path(extPath, "eg_user_list/")
 
 # Load adapter package and read all user's log files
 library(adapter)
-d <- read_all(path_to_user_data)
+d <- read_all(path_to_user_data, clean = FALSE)  # Turn cleaning off so that we can do it separately
 ```
 
 We will use our list of user data, `d`, in forthcoming analyses.
