@@ -105,3 +105,18 @@ check_file_exists <- function(..., warning_if_not = FALSE) {
 
   exists
 }
+
+#' Find a teammate's data
+#'
+#' Given a particular user and a full list of all users' data, return the data
+#' for the particular user's teammate.
+#'
+#' @param user A user data object
+#' @param full_list The full user list to be passed on to clean drone data only.
+#' @export
+#' @return A user data object or NULL.
+teammate_data <- function(user, full_list) {
+  # Get teammate driver data
+  teammate_id <- user$session$teammate_id
+  full_list[[teammate_id]]
+}

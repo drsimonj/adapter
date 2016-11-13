@@ -33,3 +33,58 @@ clean_laps.drone <- function(user, full_list) {
 
   user
 }
+
+#' @export
+clean_events.drone <- function(user, full_list) {
+  # Get teammate driver data
+  driver <- teammate_data(user, full_list)
+
+  # User driver data to get relevant event times
+  event_times <- driver$events %>%
+    filter(stringr::str_detect(event, "_(start|end)$")) %>%
+    tidyr::separate(event, into = c("event", "line"), sep = "_") %>%
+    filter(event != "talk") %>%
+    select(time, event, line)
+
+  # Get names of events
+  events <- unique(event_times$event)
+
+  # Add colum for each event
+  for (e in events) {
+    # Add to event tibble
+    user$events <- event_times %>%
+      # Identify event times and join to stream
+      rename(.e = event) %>%
+      filter(.e == e) %>%
+      full_join(user$events) %>%
+      # Create boolean variable for when event is happening
+      arrange(time) %>%
+      mutate(
+        line = ifelse(row_number() == 1, "end", line),
+        line = zoo::na.locf(line),
+        .e = line == "start") %>%
+      # Clean, put at end of data frame and rename
+      tidyr::drop_na(lap) %>%
+      select(-line, -.e, .e) %>%
+      rename_(.dots = setNames(".e", e))
+
+    # Add to streams tibble
+    user$streams <- event_times %>%
+      # Identify event times and join to stream
+      filter(event == e) %>%
+      full_join(user$streams) %>%
+      # Create boolean variable for when event is happening
+      arrange(time) %>%
+      mutate(
+        line = ifelse(row_number() == 1, "end", line),
+        line = zoo::na.locf(line),
+        event = line == "start") %>%
+      # Clean up and put at end of data frame
+      tidyr::drop_na(lap) %>%
+      select(-line, -event, event) %>%
+      rename_(.dots = setNames("event", e))
+  }
+
+  user
+
+}
