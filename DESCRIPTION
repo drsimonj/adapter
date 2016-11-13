@@ -14,7 +14,8 @@ BugReports: https://github.com/drsimonj/adapter/issues
 LazyData: TRUE
 License: Apache 2.0
 Imports:
-    tidyverse (>= 1.0.0)
+    tidyverse (>= 1.0.0),
+    zoo
 RoxygenNote: 5.0.1
 Suggests: knitr,
     rmarkdown

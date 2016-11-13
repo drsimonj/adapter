@@ -25,3 +25,40 @@ clean_laps.driver <- function(user, n_laps = 5) {
 
   user
 }
+
+
+#' @export
+clean_events.driver <- function(user) {
+
+  # Get relevant event times
+  event_times <- user$events %>%
+    filter(stringr::str_detect(event, "_(start|end)$")) %>%
+    tidyr::separate(event, into = c("event", "line"), sep = "_") %>%
+    filter(event != "talk") %>%   # Remove talking from events list
+    #tidyr::unnest(detail) %>%   # These two lines would be useful if there are multiple events with same event name but different details
+    #tidyr::unite(event, event, detail)
+    select(time, event, line)
+
+  # Get names of events
+  events <- unique(event_times$event)
+
+  # Add colum for each event
+  for (e in events) {
+    user$streams <- event_times %>%
+      # Identify event times and join to stream
+      filter(event == e) %>%
+      full_join(user$streams) %>%
+      # Create boolean variable for when event is happening
+      arrange(time) %>%
+      mutate(
+        line = ifelse(row_number() == 1, "end", line),
+        line = zoo::na.locf(line),
+        event = line == "start") %>%
+      # Clean up and put at end of data frame
+      tidyr::drop_na(lap) %>%
+      select(-line, -event, event) %>%
+      rename_(.dots = setNames("event", e))
+  }
+
+  user
+}

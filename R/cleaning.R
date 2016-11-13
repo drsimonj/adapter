@@ -14,3 +14,11 @@
 clean_laps <- function(user, n_laps = 5, full_list = NULL) {
   UseMethod("clean_laps")
 }
+
+#' Clean planned event tags
+#'
+#'
+#' @export
+clean_events <- function(user) {
+  UseMethod("clean_events")
+}
