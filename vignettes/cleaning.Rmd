@@ -38,11 +38,12 @@ d[[1]]
 
 ## Functions for cleaning log files
 
-The adapter package provides one function for cleaning log files:
+The adapter package provides the following functions for cleaning log files:
 
 - [`clean_laps()`](#cleaning-with-clean_laps)
+- [`clean_events()`](#cleaning-with-clean_events)
 
-We'll cover this below.
+We'll cover these below.
 
 ## Cleaning with clean_laps()
 
@@ -67,3 +68,16 @@ clean_d[[1]]
 If you compare to the uncleaned version above, you'll notice that there are fewer rows in the `events` and `streams` tibbles. This is because data before lap 1 started and after lap 5 ended has been removed. You'll also notice that there is `lap` column in both of these tibbles.
 
 As a side note, `clean_laps()` will work on a single driver user's list. However, to handle drone operators, it must have the complete user list. This is because the drone operator information needs to come from his/her driver teammate (where lap information is logged originally).
+
+## Cleaning with clean_events()
+
+The purpose of `clean_events()` is to add boolean (logical `TRUE`/`FALSE`) columns to the events and stream tibbles that capture when certain events are happening. The function will add a new boolean column for each type of event, which will be `TRUE` at times during which the driver in the team was within the boundaries of the trigger box collider defining the event.
+
+To use `clean_events()` most efficiently, pass it a list of user data created via `read_all`. For example, using `d` from above:
+
+```{r, message = F}
+clean_d <- clean_events(d)
+clean_d[[1]]
+```
+
+Notice the boolean columns on the right for each event.

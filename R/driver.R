@@ -72,7 +72,7 @@ clean_events.driver <- function(user) {
         line = zoo::na.locf(line),
         event = line == "start") %>%
       # Clean up and put at end of data frame
-      tidyr::drop_na(lap) %>%
+      tidyr::drop_na(matches("input_")) %>%
       select(-line, -event, event) %>%
       rename_(.dots = setNames("event", e))
   }
