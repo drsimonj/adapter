@@ -311,6 +311,7 @@ read_all  <- function(data_dir, clean = TRUE) {
   # If asked, clean logs in user list
   if (clean) {
     users <- clean_laps(users)
+    users <- clean_events(users)
   }
 
   users
