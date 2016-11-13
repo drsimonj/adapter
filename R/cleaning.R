@@ -17,8 +17,14 @@ clean_laps <- function(user, n_laps = 5, full_list = NULL) {
 
 #' Clean planned event tags
 #'
+#' Add a boolean column for each planned event to event and stream tibbles. Will
+#' be TRUE whenever the driver within a team was within the boundaries of the
+#' trigger box collider defining an event's area.
 #'
+#' @inheritParams clean_laps
+#' @return Original user obejct with boolean event columns added to the event
+#'   and stream tibbles.
 #' @export
-clean_events <- function(user) {
+clean_events <- function(user, full_list = NULL) {
   UseMethod("clean_events")
 }

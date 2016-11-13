@@ -4,9 +4,21 @@
 \alias{clean_events}
 \title{Clean planned event tags}
 \usage{
-clean_events(user)
+clean_events(user, full_list = NULL)
+}
+\arguments{
+\item{user}{A list of "user" list objects created by reading functions like
+\code{\link{read_logs}}. Also handles single user list objects too.}
+
+\item{full_list}{The full user list to be passed on to clean drone data only.}
+}
+\value{
+Original user obejct with boolean event columns added to the event
+  and stream tibbles.
 }
 \description{
-Clean planned event tags
+Add a boolean column for each planned event to event and stream tibbles. Will
+be TRUE whenever the driver within a team was within the boundaries of the
+trigger box collider defining an event's area.
 }
 

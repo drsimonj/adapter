@@ -44,6 +44,23 @@ clean_events.driver <- function(user) {
 
   # Add colum for each event
   for (e in events) {
+    # Add to event tibble
+    user$events <- event_times %>%
+      # Identify event times and join to stream
+      rename(.e = event) %>%
+      filter(.e == e) %>%
+      full_join(user$events) %>%
+      # Create boolean variable for when event is happening
+      arrange(time) %>%
+      mutate(
+        line = ifelse(row_number() == 1, "end", line),
+        line = zoo::na.locf(line),
+        .e = line == "start") %>%
+      # Put at end of data frame and rename
+      select(-line, -.e, .e) %>%
+      rename_(.dots = setNames(".e", e))
+
+    # Add to streams tibble
     user$streams <- event_times %>%
       # Identify event times and join to stream
       filter(event == e) %>%
