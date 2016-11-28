@@ -11,6 +11,53 @@ vignette: >
 
 This vignette will describe how to use cleaned user log files to calculate a set of variables determined as being initially useful.
 
-## Prerequisites
+## When are variables calculated
 
-As a step in the data analysis process, calculating variables comes after the log files of user data have been read and cleaned. Although this step is directly integrated into the `read_all` function, this vignette will go into greater detail about the functions used in this stage. To learn more about the reading and cleaning steps, please read the vignettes on [cleaning](cleaning.html) and [reading](reading.html) log files.
+As a step in the data analysis process, calculating variables comes after the log files of user data have been read and cleaned. This is directly integrated into the `read_all` function. However, this vignette will go into greater detail about the functions used in this stage. To learn more about the reading and cleaning steps, please read the vignettes on [cleaning](cleaning.html) and [reading](reading.html) log files.
+
+## Example data
+
+To demonstrate, we'll use a sample set of user log files.
+
+```{r, message = F}
+# Create path to all user data (this is specific to this document, you'll need to create your own)
+baseLoc <- system.file(package = "adapter")
+extPath <- file.path(baseLoc, "extdata")
+path_to_user_data <- file.path(extPath, "eg_user_list/")
+
+# Load adapter package and read all user's log files
+library(adapter)
+d <- read_all(path_to_user_data, calculate = FALSE)  # Turn variable calculation off so that we can do it separately
+```
+
+We will use our list of user data, `d`, in forthcoming analyses.
+
+For later comparisons, here is the data without variables calculated:
+
+```{r}
+d
+```
+
+## Functions for calculating variables
+
+The adapter package provides functions to calculate specific variables for a single user's data:
+
+- `calc_speed()` to calculate instantaneous speed in a driver's streams tibble from their velocity vectors.
+
+The package also provides a wrapper function that will take an entire list of user log file data and run any or all of the specific functions:
+
+- `calc_variables()`
+
+This wrapper function is what you will use most often.
+
+## Using `calc_variables()`
+
+Pass a cleaned user list to `calc_variables()` to add the variables calculated by the specific variable functions:
+
+```{r}
+calc_variables(d)
+```
+
+For example, notice that the drivers now have a speed variable in their streams tibbles.
+
+Additional arguments allow you to disable the calculation of specific variables. For example, `calc_variables(d, speed = FALSE)` will not calculate the speed variable.
