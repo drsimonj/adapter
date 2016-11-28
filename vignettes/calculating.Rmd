@@ -1,0 +1,16 @@
+---
+title: "Calculating variables of interest"
+author: "Dr Simon Jackson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette will describe how to use cleaned user log files to calculate a set of variables determined as being initially useful.
+
+## Prerequisites
+
+As a step in the data analysis process, calculating variables comes after the log files of user data have been read and cleaned. Although this step is directly integrated into the `read_all` function, this vignette will go into greater detail about the functions used in this stage. To learn more about the reading and cleaning steps, please read the vignettes on [cleaning](cleaning.html) and [reading](reading.html) log files.

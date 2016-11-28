@@ -25,7 +25,7 @@ path_to_user_data <- file.path(extPath, "eg_user_list/")
 
 # Load adapter package and read all user's log files
 library(adapter)
-d <- read_all(path_to_user_data, clean = FALSE)  # Turn cleaning off so that we can do it separately
+d <- read_all(path_to_user_data, clean = FALSE, calculate = FALSE)  # Turn cleaning off so that we can do it separately
 ```
 
 We will use our list of user data, `d`, in forthcoming analyses.

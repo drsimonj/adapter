@@ -36,5 +36,13 @@ clean_events.user_list <- function(user) {
 
 #' @export
 calc_variables.user_list <- function(users, speed = TRUE) {
-  purrr::map(users, calc_variables, speed = speed)
+  # Keep original class
+  oc <- class(users)
+
+  users <- purrr::map(users, calc_variables, speed = speed)
+
+  # Reapply original class
+  class(users) <- oc
+
+  users
 }
