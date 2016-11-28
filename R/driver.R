@@ -79,3 +79,8 @@ clean_events.driver <- function(user) {
 
   user
 }
+
+#' @export
+calc_speed <- function(user) {
+
+}
