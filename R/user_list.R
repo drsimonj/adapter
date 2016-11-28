@@ -33,3 +33,8 @@ clean_events.user_list <- function(user) {
 
   user
 }
+
+#' @export
+calc_variables.user_list <- function(users, speed = TRUE) {
+  purrr::map(users, calc_variables, speed = speed)
+}

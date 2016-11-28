@@ -1,4 +1,12 @@
 #' @export
+calc_variables.user <- function(users, speed = TRUE) {
+  if (speed)
+    users <- calc_speed(users)
+
+  users
+}
+
+#' @export
 calc_speed.user <- function(user) {
   streams <- user$streams
 

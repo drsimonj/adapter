@@ -1,3 +1,15 @@
+#' Calculate variables
+#'
+#' A wrapper function to apply variable calculation functions to a user list
+#'
+#' @export
+#' @param users A user or list of users created by reading functions like
+#'   \code{\link{read_logs}}.
+#' @param speed Should speed be calculated using \code{\link{calc_speed}}
+calc_variables <- function(users, speed = TRUE) {
+  UseMethod("calc_variables")
+}
+
 #' Calculate instantaneous speed
 #'
 #' Take a user object and calculate instantaneous speed from the Unity-produced

@@ -87,8 +87,3 @@ clean_events.drone <- function(user, full_list) {
 
   user
 }
-
-#' @export
-calc_speed <- function(user) {
-  user
-}
