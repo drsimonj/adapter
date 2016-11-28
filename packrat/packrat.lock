@@ -107,9 +107,9 @@ Hash: b2a47a2b91737978cf50ba95825a9cd1
 
 Package: ggplot2
 Source: CRAN
-Version: 2.1.0
-Hash: 50e297b0191179c39c7dcae0eff72b51
-Requires: digest, gtable, plyr, reshape2, scales
+Version: 2.2.0
+Hash: 78c14285e0c114542d051a09bd552472
+Requires: digest, gtable, lazyeval, plyr, reshape2, scales, tibble
 
 Package: git2r
 Source: CRAN
@@ -281,8 +281,8 @@ Requires: httr, magrittr, selectr, xml2
 
 Package: scales
 Source: CRAN
-Version: 0.4.0
-Hash: c4a91e7a322e03813b68b73940ce031f
+Version: 0.4.1
+Hash: c0b89e928595f6133fe9d5dc139060b0
 Requires: RColorBrewer, Rcpp, dichromat, labeling, munsell, plyr
 
 Package: selectr
