@@ -213,11 +213,12 @@ read_all_streams <- function(user_dir,
 #' @param data_dir Directory containing all group data  directories. Must be
 #'   organised in particular way.
 #' @param clean Should user list be cleaned as well?
+#' @param calculate Should derived variables be calculated?
 #'
 #' @return List of user log-file data lists
 #'
 #' @export
-read_all  <- function(data_dir, clean = TRUE) {
+read_all  <- function(data_dir, clean = TRUE, calculate = TRUE) {
   # Group directories
   group_dirs <- file.path(data_dir, list.files(data_dir), "logs")
 
@@ -312,6 +313,11 @@ read_all  <- function(data_dir, clean = TRUE) {
   if (clean) {
     users <- clean_laps(users)
     users <- clean_events(users)
+  }
+
+  # If asked, calculate new variables
+  if (calculate) {
+    users <- calc_variables(users)
   }
 
   users

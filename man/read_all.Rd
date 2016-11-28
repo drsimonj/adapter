@@ -4,13 +4,15 @@
 \alias{read_all}
 \title{Read all users logs from a data directory}
 \usage{
-read_all(data_dir, clean = TRUE)
+read_all(data_dir, clean = TRUE, calculate = TRUE)
 }
 \arguments{
 \item{data_dir}{Directory containing all group data  directories. Must be
 organised in particular way.}
 
 \item{clean}{Should user list be cleaned as well?}
+
+\item{calculate}{Should derived variables be calculated?}
 }
 \value{
 List of user log-file data lists
