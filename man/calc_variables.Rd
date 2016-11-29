@@ -4,13 +4,15 @@
 \alias{calc_variables}
 \title{Calculate variables}
 \usage{
-calc_variables(users, speed = TRUE)
+calc_variables(users, speed = TRUE, distance = TRUE)
 }
 \arguments{
 \item{users}{A user or list of users created by reading functions like
 \code{\link{read_logs}}.}
 
 \item{speed}{Should speed be calculated using \code{\link{calc_speed}}}
+
+\item{distance}{Should distance travelled since last time point be calculated using \code{\link{calc_distance}}}
 }
 \description{
 A wrapper function to apply variable calculation functions to a user list
