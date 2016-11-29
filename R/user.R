@@ -1,12 +1,37 @@
 #' @export
-calc_variables.user <- function(users, speed = TRUE, distance = TRUE) {
-  if (speed)
-    users <- calc_speed(users)
+calc_variables.user <- function(users, anyevent = TRUE, speed = TRUE, distance = TRUE) {
 
-  if (distance)
-    users <- calc_distance(users)
+  if (anyevent) users <- calc_anyevent(users)
+
+  if (speed) users <- calc_speed(users)
+
+  if (distance) users <- calc_distance(users)
 
   users
+}
+
+#' @export
+calc_anyevent.user <- function(user, event_vars = c("fall", "ice", "fog", "block", "animal")) {
+  event_vars <- event_vars[event_vars %in% names(user$events)]
+
+  if (!length(event_vars))
+    return(user)
+
+  user$events <- user$events %>%
+    select_("time", .dots = event_vars) %>%
+    gather(key, val, -time) %>%
+    group_by(time) %>%
+    summarise(any_event = any(val)) %>%
+    right_join(user$events)
+
+  user$streams <- user$streams %>%
+    select_("time", .dots = event_vars) %>%
+    gather(key, val, -time) %>%
+    group_by(time) %>%
+    summarise(any_event = any(val)) %>%
+    right_join(user$streams)
+
+  user
 }
 
 #' @export

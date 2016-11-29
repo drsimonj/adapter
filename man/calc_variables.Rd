@@ -4,11 +4,14 @@
 \alias{calc_variables}
 \title{Calculate variables}
 \usage{
-calc_variables(users, speed = TRUE, distance = TRUE)
+calc_variables(users, anyevent = TRUE, speed = TRUE, distance = TRUE)
 }
 \arguments{
 \item{users}{A user or list of users created by reading functions like
 \code{\link{read_logs}}.}
+
+\item{anyevent}{Should a boolean column be created to indicates whether any
+event is happening via \code{\link{calc_anyevent}}}
 
 \item{speed}{Should speed be calculated using \code{\link{calc_speed}}}
 

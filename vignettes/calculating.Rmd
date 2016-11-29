@@ -42,6 +42,7 @@ d
 
 The adapter package provides functions to calculate specific variables for a single user's data:
 
+- `calc_anyevent()` to create a boolean variable in events and streams tibbles indicating whether an event is taking place.
 - `calc_speed()` to calculate instantaneous speed in a driver's streams tibble from their velocity vectors.
 - `calc_distance()` to calculate the distance travelled in the sim world since the last time log from position vectors.
 
