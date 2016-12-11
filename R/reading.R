@@ -76,7 +76,7 @@ read_session <- function(user_dir,
 
   # Convert date variable to date (if it exists)
   if ("local_start_time" %in% names(session))
-    session <- dplyr::mutate_at(session, "local_start_time", lubridate::dmy_hms, tz = tz)
+    session <- dplyr::mutate_at(session, "local_start_time", lubridate::mdy_hms, tz = tz)
 
   session
 }
