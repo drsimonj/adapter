@@ -19,14 +19,14 @@ calc_anyevent.user <- function(user, event_vars = c("fall", "ice", "fog", "block
 
   user$events <- user$events %>%
     select_("time", .dots = event_vars) %>%
-    gather(key, val, -time) %>%
+    tidyr::gather(key, val, -time) %>%
     group_by(time) %>%
     summarise(any_event = any(val)) %>%
     right_join(user$events)
 
   user$streams <- user$streams %>%
     select_("time", .dots = event_vars) %>%
-    gather(key, val, -time) %>%
+    tidyr::gather(key, val, -time) %>%
     group_by(time) %>%
     summarise(any_event = any(val)) %>%
     right_join(user$streams)
