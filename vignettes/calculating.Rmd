@@ -13,7 +13,7 @@ This vignette will describe how to use cleaned user log files to calculate a set
 
 ## When are variables calculated
 
-As a step in the data analysis process, calculating variables comes after the log files of user data have been read and cleaned. This is directly integrated into the `read_all` function. However, this vignette will go into greater detail about the functions used in this stage. To learn more about the reading and cleaning steps, please read the vignettes on [cleaning](cleaning.html) and [reading](reading.html) log files.
+As a step in the data analysis process, calculating variables comes after the log files of user data have been read and cleaned. This is directly integrated into the `read_all` function. However, this vignette will go into greater detail about the functions used in this stage. To learn more about the reading and cleaning steps, please read the vignettes on [reading](reading.html) and [cleaning](cleaning.html) log files.
 
 ## Example data
 

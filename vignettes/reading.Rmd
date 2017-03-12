@@ -22,7 +22,7 @@ A group of users' log-files are structured as follows:
 - `data/`: a top-level data folder that contains all relevant data. The name of this directory can be changed.
     - `yymmddhh_group/`: a folder **for each group** (dyad or individual) taking part in a given experimental session. Format of folder name is last two digits of the year, month, day, hour (24-hour format), an underscore, and the group number. For example, `16101114_1/` is a directory containing data for the first group (`_1`) in the session completed at 2pm (`14` for 1400hr) on 11/10/16 (`161011`). The reason for this format is that it keeps folders in proper date order.
         - `logs/`: a folder containing the log files for users (one or two) who were in the particular group. The name of this directory CANNOT be changed.
-            - `yymmddhh_group-seat_timestamp/`: a folder **for each user** in the group. Format is same as group folder, followed by the seat number (e.g., `-g1` refers to Gunner 1; these can be `g1`, `g2`, `d1`, `d2`), and an epoch timestamp. The seat number is relevant because it defines the user's role in the simulation. Users seated in Driver 2 (`d2`) or Gunner 2 (`g2`), which are in the CODES Simulation Lab Beta, were drivers. Users seated in Driver 1 (`d1`) or Gunner 1 (`g1`), which are in the CODES Simulation Lab Alpha, were drone oeprators.
+            - `yymmddhh_group-seat_timestamp/`: a folder **for each user** in the group. Format is same as group folder, followed by the seat number (e.g., `-g1` refers to Gunner 1; these can be `g1`, `g2`, `d1`, `d2`), and an epoch timestamp. The seat number is relevant because it defines the user's role in the simulation. Users seated in Driver 2 (`d2`) or Gunner 2 (`g2`), which are in the CODES Simulation Lab Alpha, were drivers. Users seated in Driver 1 (`d1`) or Gunner 1 (`g1`), which are in the CODES Simulation Lab Beta, were drone operators.
 
 Within this lowest level directory will be a single user's log files. This directory of log files has three things in it:
 
@@ -67,7 +67,7 @@ In general, you'll use `read_all()`. This function takes a path to the top-level
 
 `read_all()` goes further with this list, adding the `role` of each user to the session tibble, and appending the relevant `"driver"` or `"drone"` class. An option to `clean` all users' data is also available, and set to `TRUE` by default. When `TRUE`, `read_all()` will make use of the cleaning functions before returning the final list of user data. To learn more about these cleaning functions and how to implement them separately, please read the [Vignette on Cleaning log files](cleaning.html).
 
-Here is an exmaple that demonstrates the use of `read_all()`:
+Here is an example that demonstrates the use of `read_all()`:
 
 ```{r, message = F}
 # Create path to all user data (this is specific to this document, you'll need to create your own)
@@ -85,7 +85,7 @@ sapply(d, class)
 
 ### Read a user with `read_logs()`
 
-Use `read_logs()` when handling a single user. This functions takes a path to a user's log file directory and, using the other four reading functions and their default values, returns a list of three tibbles (data frames):
+In general, you'll use `read_all()`, but `read_logs()` is available for handling **a single user** if need be. This functions takes a path to a user's log file directory and, using the other four reading functions and their default values, returns a list of three tibbles (data frames):
 
 - `session`
 - `events`
@@ -136,7 +136,7 @@ Check the earlier descriptions of each file to see how these tibbles correspond 
 
 ### When `read_logs()` doesn't work
 
-It is possible that you might encounter a situation where the default values used by `read_logs()` does not do the trick! In this case, you would use the other read functions available to you.
+It is possible that you might encounter a situation where the default settings used by `read_logs()` do not do the trick! In this case, you would use the other read functions available to you.
 
 Each of the other four functions serves a more specific purpose. For example, `read_session()` is explicitly used for reading and formatting a `session.tsv` file. With these other read functions, you can explicitly define the directoy and file names, variable names, and so on.
 
@@ -144,7 +144,7 @@ If you encounter a situation where you need to use these other functions, rememb
 
 ```{r, message = F}
 # Read the session file
-session <- session <- read_session(user_dir = path_to_user_data)
+session <- read_session(user_dir = path_to_user_data)
 
 # Read the events file
 events  <- read_events(user_dir = path_to_user_data)
