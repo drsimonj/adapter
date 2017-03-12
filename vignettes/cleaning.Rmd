@@ -65,7 +65,7 @@ Lets now compare the data for the first user:
 clean_d[[1]]
 ```
 
-If you compare to the uncleaned version above, you'll notice that there are fewer rows in the `events` and `streams` tibbles. This is because data before lap 1 started and after lap 5 ended has been removed. You'll also notice that there is `lap` column in both of these tibbles.
+If you compare to the uncleaned version above, you'll notice that there are fewer rows in the `events` and `streams` tibbles. This is because data before lap 1 started and after lap 5 ended has been removed. You'll also notice that there is a `lap` column in both of these tibbles.
 
 As a side note, `clean_laps()` will work on a single driver user's list. However, to handle drone operators, it must have the complete user list. This is because the drone operator information needs to come from his/her driver teammate (where lap information is logged originally).
 
