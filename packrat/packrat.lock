@@ -5,8 +5,8 @@ Repos: CRAN=https://cran.rstudio.com/
 
 Package: BH
 Source: CRAN
-Version: 1.60.0-2
-Hash: be2967bcff307e561d9ba17faf03205c
+Version: 1.62.0-1
+Hash: 14dfb3e8ffe20996118306ff4de1fab2
 
 Package: DBI
 Source: CRAN
@@ -115,7 +115,7 @@ Hash: 87165608ca8aeb0958835c3c5b52b6b7
 Package: dplyr
 Source: CRAN
 Version: 0.5.0
-Hash: bda3748a1996cd131795fb8ebe88eaf9
+Hash: 8db1476d7dc167fbc48b9e128105ce51
 Requires: BH, DBI, R6, Rcpp, assertthat, lazyeval, magrittr, tibble
 
 Package: evaluate
@@ -154,7 +154,7 @@ Hash: cd78381a9d3fea966ac39bd0daaf5554
 Package: haven
 Source: CRAN
 Version: 1.0.0
-Hash: 3506e0f430af956983d20ffa3356a426
+Hash: dd22a9465ecb2d1c6e1f3686e109b536
 Requires: BH, Rcpp, hms, readr, tibble
 
 Package: highr
@@ -186,9 +186,9 @@ Hash: 86d4b85b84421a4815f1bb4872e30ef4
 
 Package: knitr
 Source: CRAN
-Version: 1.14
-Hash: e7b411f5a5512295a260a45683fa0c4a
-Requires: digest, evaluate, formatR, highr, markdown, stringr, yaml
+Version: 1.15.1
+Hash: eed7437e2b614c9e3923b7932b16ac97
+Requires: digest, evaluate, highr, markdown, stringr, yaml
 
 Package: labeling
 Source: CRAN
@@ -270,13 +270,13 @@ Requires: mnormt
 Package: purrr
 Source: CRAN
 Version: 0.2.2
-Hash: ef2b918356eb3d3d012fb755e4e387e9
+Hash: 410dff45c1d56a4d911e869fd4ce72f2
 Requires: BH, Rcpp, dplyr, lazyeval, magrittr
 
 Package: readr
 Source: CRAN
 Version: 1.0.0
-Hash: f17ef9e5824f4ddf09484b1291b359ea
+Hash: f8d53f65df31fad812e31ca35be79540
 Requires: BH, R6, Rcpp, curl, hms, tibble
 
 Package: readxl
@@ -359,11 +359,11 @@ Requires: Rcpp, dplyr, lazyeval, magrittr, stringi, tibble
 
 Package: tidyverse
 Source: CRAN
-Version: 1.0.0
-Hash: 7adbfd73ba78f6c97f54e45df607850a
-Requires: DBI, broom, dplyr, forcats, ggplot2, haven, hms, httr,
-    jsonlite, lubridate, magrittr, modelr, purrr, readr, readxl, rvest,
-    stringr, tibble, tidyr, xml2
+Version: 1.1.1
+Hash: 72d5fada870c90b835bbdfc281283c99
+Requires: broom, dplyr, forcats, ggplot2, haven, hms, httr, jsonlite,
+    lubridate, magrittr, modelr, purrr, readr, readxl, rvest, stringr,
+    tibble, tidyr, xml2
 
 Package: whisker
 Source: CRAN
@@ -377,16 +377,16 @@ Hash: 774eb7be9087cdc24b53b74e5359cfac
 
 Package: xml2
 Source: CRAN
-Version: 1.0.0
-Hash: 09915cc21a33f7139d3b6aafcb0e2862
+Version: 1.1.1
+Hash: f2198cd266630ef2294f97f1e78bc018
 Requires: BH, Rcpp
 
 Package: yaml
 Source: CRAN
-Version: 2.1.13
-Hash: 4854ccabebc225e8a7309fb4a74980de
+Version: 2.1.14
+Hash: c81230c3a7d9ba20607ad6b4331173d1
 
 Package: zoo
 Source: CRAN
-Version: 1.7-13
-Hash: 5e9d37229de4b68b9a5e09a619e0f9b6
+Version: 1.7-14
+Hash: a4c3a385cd122b5d6af30732bf267060
