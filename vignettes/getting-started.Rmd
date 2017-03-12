@@ -1,0 +1,97 @@
+---
+title: "Getting started with the adapter package"
+author: "Dr Simon Jackson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+In collaboration with the [Defence Science and Technology Group](http://www.dst.defence.gov.au/), the [CODES Research Lab](http://sydney.edu.au/science/psychology/lab/codes/) has developed a simulation for assessing the adaptability of teams facing challenging conditions. The simulation produces large and complex data streams that are unsuitable for immediate analysis. An R package has been created to handle the management and analysis of this data: adapter.
+
+This vignette outlines how to get started using the adapter package. This includes information on installing adapter and how to access the help material provided with the package.
+
+## Installation
+
+There are two methods for installing adapter. Remember that you only ever need to install the package once, unless updates to the package are made.
+
+### For users with an internet connection (recommended)
+
+If you have an internet connection and ability to install R packages, follow this approach. This approach is preferred because the version hosted on GitHub will be the most up to date. It also ensures that you're able to install the packages that adapter depends on (such as dplyr).
+
+adapter is hosted on a GitHub account, which allows the package to be installed with the help of another package, devtools. Therefore, first make sure devtools is installed, which you can do via:
+
+```{r, eval = F}
+install.packages("devtools")
+```
+
+With devtools installed, you can then install adapter by running the following:
+
+```{r, eval = F}
+devtools::install_github("drsimonj/adapter", build_vignettes = TRUE)
+```
+
+Note that `build_vignettes = TRUE` is an optional parameter. By including it, the package will install and generate instructional vignettes that come with the package. This will increase the total installation time, but provides useful documents if you want to learn about adapter in detail.
+
+### For users without an internet connection
+
+If you do not have an internet connection, follow this approach. This approach is less preferrable because it requies installing from a file, which had to be created manually. Therefore, it is possible that package updates have been made (appearing on GitHub), that are not included in the most recent file version. However, it is possible to overcome this issue with some effort (see next section).
+
+To use this method, you must have a bundled source package, which is a type of compressed file with the extension `.tar.gz`. The file is typically named `adapter`, followed by a version number, and this extension. For example, at the time this was written, the file was named `adapter_0.0.0.9000.tar.gz`.
+
+Place this file somewhere accessible and do one of the following:
+
+- Point-and-click approach:
+    - Open the "Tools" menu and click "Install Packages..."
+    - In the pop-up window, change "Install from:" to "Package Archive File (.tgz; .tar.gz)"
+    - Locate the file in the navigation window that appears and select it
+    - Click "Install"
+- Code approach:
+    - Determine the file path (e.g., `"~Desktop/adapter_0.0.0.9000.tar.gz"`
+    - Use this file path (`FILE_PATH`) and run the command `install.packages("FILE_PATH", repo = NULL)`
+
+### Extra options without internet
+
+If using the method above that involves installing from a file, there are two issues you might have:
+
+- The file you have might not include the latest package version.
+- You might not have the package file at all.
+
+These can be overcome with some extra work:
+
+- On a computer WITH internet, go to the [GitHub page where the package is hosted](https://github.com/drsimonj/adapter): <https://github.com/drsimonj/adapter>
+- Download the package as a zip (under the download menu)
+- Unzip the package and open it as a project with RStudio
+- Under the "Build" menu, click Build Source
+- Wait for `.tar.gz` to be built
+
+You now have the `.tar.gz` that can be transferred to other machines and used for installing the package using the approach above.
+
+## Finding help
+
+Once adapter is installed, you can go ahead and begin using it. adapter provides a number of functions to support you. For first-time users, the best resources for help are the detailed vignettes. Functions are also documented for further help.
+
+### Vignettes
+
+Detailed vignettes are included with instructions on a range of function topics. To access these, run the following:
+
+```{r, eval = F}
+browseVignettes("adapter")
+```
+
+This will open an internet browser with a list of the available vignettes (including this one). In general, the first vignette you should read is "Reading log files", which you can open by clicking the "HTML" link. This vignette explains how to structure a directory of simulation-generated log files and read them into R.
+
+### Function documentation
+
+Another resource for help is the function documentation. Like any function in R, this document taken can be accessed by running `?function_name`.
+
