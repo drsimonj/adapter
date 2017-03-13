@@ -126,8 +126,8 @@ Requires: stringr
 
 Package: forcats
 Source: CRAN
-Version: 0.1.1
-Hash: 7f93e560ba45f278e1d66df743747d2a
+Version: 0.2.0
+Hash: e5a3b0b96a39f5581467b0c6366f7408
 Requires: magrittr, tibble
 
 Package: formatR
