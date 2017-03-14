@@ -26,11 +26,11 @@ bind_tbl <- function(user_list, tbl_name) {
 
 #' @export
 bind_tbl.default <- function(user_list, tbl_name) {
-  stop("bind_tbl() is only used for objects with the class 'user_list'. See ?adapter::read_all")
-}
+  if (!is(user_list, "user_list"))
+    warning("bind_tbl() is intended to be used for objects with the class 'user_list'. ",
+            "See ?adapter::read_all for help. ",
+            "Will attempt to run anyway...")
 
-#' @export
-bind_tbl.user_list <- function(user_list, tbl_name) {
   tbl_name <- deparse(substitute(tbl_name))
   tbl_name <- match.arg(tbl_name, c("session", "events", "streams"))
 
@@ -38,4 +38,5 @@ bind_tbl.user_list <- function(user_list, tbl_name) {
     return(rename(purrr::map_df(user_list, "session"), uid = user_id))
 
   purrr::map_df(user_list, ~ mutate(.[[tbl_name]], uid = .$session$user_id))
+
 }
