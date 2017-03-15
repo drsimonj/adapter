@@ -40,3 +40,54 @@ bind_tbl.default <- function(user_list, tbl_name) {
   purrr::map_df(user_list, ~ mutate(.[[tbl_name]], uid = .$session$user_id))
 
 }
+
+
+#' Get data for drivers or drones only from a mixed user list
+#'
+#' A list of user data generated via methods like \code{\link{read_all}}()
+#' contains a mix of drivers and drone operators. \code{get_drivers}() and
+#' \code{get_drones}() extract only users of a certain type from such a mixed
+#' list.
+#'
+#' @param user_list List of user data created via a method such as
+#'   \code{\link{read_all}}()
+#' @param type String of the type of user to keep. Must be one of "driver" or
+#'   "drone".
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Given a user-list of data `d`...
+#' get_drivers(d)
+#' get_drones(d)
+#' }
+get_type <- function(user_list, type) {
+  UseMethod("get_type")
+}
+
+#' @export
+get_type.default <- function(user_list, type) {
+  if (!is(user_list, "user_list"))
+    warning("bind_tbl() is intended to be used for objects with the class 'user_list'. ",
+            "See ?adapter::read_all for help. ",
+            "Will attempt to run anyway...")
+
+  type <- match.arg(type, c("driver", "drone"))
+
+  tmp <- purrr::keep(user_list, is, type)
+  class(tmp) <- c("user_list", class(tmp))
+  tmp
+}
+
+#' @export
+#' @rdname get_type
+get_drivers <- function(user_list) {
+  get_type(user_list, "driver")
+}
+
+#' @export
+#' @rdname get_type
+get_drones <- function(user_list) {
+  get_type(user_list, "drone")
+}

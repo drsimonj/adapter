@@ -1,0 +1,114 @@
+---
+title: "Typical-use Example"
+author: "Dr Simon Jackson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Typical-use Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette walks through a typical case of using the adapter package and how to best leverage its functions and features.
+
+## Instllation and loading
+
+Make sure that adapter is installed. For installation instructions, please read the vignette, ["Getting started"](getting.started.html).
+
+Once installed, load adapter to make use of it:
+
+```{r}
+library(adapter)
+```
+
+## Reading data
+
+You will almost always begin by reading in the simulation log file data. This is best done by having the data stored in a specific directory structure. For more information about how to structure data or how to handle cases when the data is not structured this way, please read the vignette, ["Reading log files"](reading.html).
+
+Assuming the log files are structured appropriately, read the data into R using `read_all()` as demonstrated below.
+
+**WARNING: reading the data can take a long time.**
+
+```{r, message = F}
+# Define a path to the top-level log file directory.
+# The code shown here is specific to this example document.
+# You will need to use your own (e.g., path_to_user_data <- "data/")
+baseLoc <- system.file(package = "adapter")
+extPath <- file.path(baseLoc, "extdata")
+path_to_user_data <- file.path(extPath, "eg_user_list/")
+
+# Read all users' log files and save as an object `d`
+d <- read_all(path_to_user_data)
+```
+
+By using `read_all()`, you have imported the data as a list object in a convenient way. Important checks of the data coding are made (e.g., that there is only one driver and one or no drone operators per team, and that there aren't any duplicate unique ids). Other useful preparation and variable calculations occur automatically. For example:
+
+- Data is cleaned to include only relevant data. For example, log information occuring before the first lap started or after the fifth lap ended is removed.
+- Users have their teammate's unique id (`uid`) stored for easy access, if they had a teammate.
+- Additional columns are added to the data regarding `events` and `streams` including:
+    - Variables for tracking what's happening such as a numeric `lap` column and boolean event columns like `fog` and `ice`.
+    - Useful features variables calculated in the streams such as instantaneous speed or distance travelled.
+
+For more detailed information about this, please read the vignette, ["Reading log files"](reading.html).
+
+### Saving time by saving the data
+
+Reading the data can take a long time, and it's probably not something you want to do everytime you start working. Instead, it's advisable that after reading the data once, you save it as a properly formatted R object that can be easily read back into R on future occassions. Here is a demonstration of how this can be done by saving the list of user data in a .RDS format into a directory, "data/saved/".
+
+```{r}
+# Define the directory in which to save
+dir_to_save <- "data/save/"
+
+# Define the file name (must end in `.rds`)
+file_name <- "saved_user_list.rds"
+
+# If the saved object doesn't exist, then create the directory (if needed) and
+# save the object
+if(!file.exists(file.path(dir_to_save, file_name))) {
+  # Create a data/saved directory (unless it already exists)
+  dir.create(dir_to_save, recursive = TRUE, showWarnings = FALSE)
+  
+  # Save object as RDS
+  saveRDS(d, file.path(dir_to_save, file_name))
+}
+```
+
+Now you can reload this saved object each time you start working as follows:
+
+```{r}
+d <- readRDS(file.path(dir_to_save, file_name))
+```
+
+It's good practice to bundle all of these components together at the top of your script so you can read and save or load data as appropriate each time. You can do this as follows:
+
+```{r}
+## TODO: Compelte this section
+
+# # Define directory path and file name
+# dir_to_save <- "data/save/"
+# file_name <- "saved_user_list.rds"
+# 
+# # If the saved object doesn't exist, then create the directory (if needed) and
+# # save the object
+# if(!file.exists(file.path(dir_to_save, file_name))) {
+#   # Create a data/saved directory (unless it already exists)
+#   dir.create(dir_to_save, recursive = TRUE, showWarnings = FALSE)
+#   
+#   # Save object as RDS
+#   saveRDS(d, file.path(dir_to_save, file_name))
+# }
+```
+
+
+### Structure of the user list 
+
+It is important to understand is the structure of the list of user data returned by `read_all()`. Let's take a quick look:
+
+```{r}
+class(d)
+length(d)
+```
+
+
+
+
