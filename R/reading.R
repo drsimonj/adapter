@@ -307,7 +307,7 @@ read_all  <- function(data_dir, clean = TRUE, calculate = TRUE) {
   }
 
   # Add user_list class to final object
-  class(users) <- c("user_list", class("user"))
+  class(users) <- c("user_list", class(users))
 
   # If asked, clean logs in user list
   if (clean) {
