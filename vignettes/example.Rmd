@@ -53,7 +53,52 @@ For more detailed information about this, please read the vignette, ["Reading lo
 
 ### Saving time by saving the data
 
-Reading the data can take a long time, and it's probably not something you want to do everytime you start working. Instead, 
+Reading the data can take a long time, and it's probably not something you want to do everytime you start working. Instead, it's advisable that after reading the data once, you save it as a properly formatted R object that can be easily read back into R on future occassions. Here is a demonstration of how this can be done by saving the list of user data in a .RDS format into a directory, "data/saved/".
+
+```{r}
+# Define the directory in which to save
+dir_to_save <- "data/save/"
+
+# Define the file name (must end in `.rds`)
+file_name <- "saved_user_list.rds"
+
+# If the saved object doesn't exist, then create the directory (if needed) and
+# save the object
+if(!file.exists(file.path(dir_to_save, file_name))) {
+  # Create a data/saved directory (unless it already exists)
+  dir.create(dir_to_save, recursive = TRUE, showWarnings = FALSE)
+  
+  # Save object as RDS
+  saveRDS(d, file.path(dir_to_save, file_name))
+}
+```
+
+Now you can reload this saved object each time you start working as follows:
+
+```{r}
+d <- readRDS(file.path(dir_to_save, file_name))
+```
+
+It's good practice to bundle all of these components together at the top of your script so you can read and save or load data as appropriate each time. You can do this as follows:
+
+```{r}
+## TODO: Compelte this section
+
+# # Define directory path and file name
+# dir_to_save <- "data/save/"
+# file_name <- "saved_user_list.rds"
+# 
+# # If the saved object doesn't exist, then create the directory (if needed) and
+# # save the object
+# if(!file.exists(file.path(dir_to_save, file_name))) {
+#   # Create a data/saved directory (unless it already exists)
+#   dir.create(dir_to_save, recursive = TRUE, showWarnings = FALSE)
+#   
+#   # Save object as RDS
+#   saveRDS(d, file.path(dir_to_save, file_name))
+# }
+```
+
 
 ### Structure of the user list 
 
