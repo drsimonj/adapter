@@ -25,7 +25,9 @@ library(adapter)
 
 You will almost always begin by reading in the simulation log file data. This is best done by having the data stored in a specific directory structure. For more information about how to structure data or how to handle cases when the data is not structured this way, please read the vignette, ["Reading log files"](reading.html).
 
-Assuming the log files are structured appropriately, read the data into R as follows:
+Assuming the log files are structured appropriately, read the data into R using `read_all()` as demonstrated below.
+
+**WARNING: reading the data can take a long time.**
 
 ```{r, message = F}
 # Define a path to the top-level log file directory.
@@ -39,7 +41,7 @@ path_to_user_data <- file.path(extPath, "eg_user_list/")
 d <- read_all(path_to_user_data)
 ```
 
-By using `read_all()`, you have imported the data as a list object, with some a number of useful things happening automatically for you. For example:
+By using `read_all()`, you have imported the data as a list object in a convenient way. Important checks of the data coding are made (e.g., that there is only one driver and one or no drone operators per team, and that there aren't any duplicate unique ids). Other useful preparation and variable calculations occur automatically. For example:
 
 - Data is cleaned to include only relevant data. For example, log information occuring before the first lap started or after the fifth lap ended is removed.
 - Users have their teammate's unique id (`uid`) stored for easy access, if they had a teammate.
@@ -49,4 +51,19 @@ By using `read_all()`, you have imported the data as a list object, with some a 
 
 For more detailed information about this, please read the vignette, ["Reading log files"](reading.html).
 
-The important thing to understand is the structure of this list, `d`.
+### Saving time by saving the data
+
+Reading the data can take a long time, and it's probably not something you want to do everytime you start working. Instead, 
+
+### Structure of the user list 
+
+It is important to understand is the structure of the list of user data returned by `read_all()`. Let's take a quick look:
+
+```{r}
+class(d)
+length(d)
+```
+
+
+
+
