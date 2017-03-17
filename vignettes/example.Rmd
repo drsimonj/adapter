@@ -2,16 +2,18 @@
 title: "Typical-use Example"
 author: "Dr Simon Jackson"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{Typical-use Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette walks through a typical case of using the adapter package and how to best leverage its functions and features.
+This vignette walks through the key functions and features of the adapter package, and provides some demonstration cases.
 
-## Instllation and loading
+# Installation and loading
 
 Make sure that adapter is installed. For installation instructions, please read the vignette, ["Getting started"](getting.started.html).
 
@@ -21,7 +23,7 @@ Once installed, load adapter to make use of it:
 library(adapter)
 ```
 
-## Reading data
+# Reading data
 
 You will almost always begin by reading in the simulation log file data. This is best done by having the data stored in a specific directory structure. For more information about how to structure data or how to handle cases when the data is not structured this way, please read the vignette, ["Reading log files"](reading.html).
 
@@ -29,7 +31,7 @@ Assuming the log files are structured appropriately, read the data into R using 
 
 **WARNING: reading the data can take a long time.**
 
-```{r, message = F}
+```{r, eval = F}
 # Define a path to the top-level log file directory.
 # The code shown here is specific to this example document.
 # You will need to use your own (e.g., path_to_user_data <- "data/")
@@ -51,11 +53,11 @@ By using `read_all()`, you have imported the data as a list object in a convenie
 
 For more detailed information about this, please read the vignette, ["Reading log files"](reading.html).
 
-### Saving time by saving the data
+## Saving time by saving data
 
 Reading the data can take a long time, and it's probably not something you want to do everytime you start working. Instead, it's advisable that after reading the data once, you save it as a properly formatted R object that can be easily read back into R on future occassions. Here is a demonstration of how this can be done by saving the list of user data in a .RDS format into a directory, "data/saved/".
 
-```{r}
+```{r, eval = F}
 # Define the directory in which to save
 dir_to_save <- "data/save/"
 
@@ -75,38 +77,127 @@ if(!file.exists(file.path(dir_to_save, file_name))) {
 
 Now you can reload this saved object each time you start working as follows:
 
-```{r}
+```{r, eval = F}
 d <- readRDS(file.path(dir_to_save, file_name))
 ```
 
 It's good practice to bundle all of these components together at the top of your script so you can read and save or load data as appropriate each time. You can do this as follows:
 
 ```{r}
-## TODO: Compelte this section
+# Define directory path and file name
+dir_to_save <- "data/save/"
+file_name <- "saved_user_list.rds"
 
-# # Define directory path and file name
-# dir_to_save <- "data/save/"
-# file_name <- "saved_user_list.rds"
-# 
-# # If the saved object doesn't exist, then create the directory (if needed) and
-# # save the object
-# if(!file.exists(file.path(dir_to_save, file_name))) {
-#   # Create a data/saved directory (unless it already exists)
-#   dir.create(dir_to_save, recursive = TRUE, showWarnings = FALSE)
-#   
-#   # Save object as RDS
-#   saveRDS(d, file.path(dir_to_save, file_name))
-# }
+# If the saved object doesn't exist, then create the directory (if needed) and
+# save the object
+if(!file.exists(file.path(dir_to_save, file_name))) {
+  
+  # ** Replace these lines with a path to YOUR data directory **
+  baseLoc <- system.file(package = "adapter")
+  extPath <- file.path(baseLoc, "extdata")
+  path_to_user_data <- file.path(extPath, "eg_user_list/")
+  
+  # Read all users' log files and save as an object `d`
+  d <- read_all(path_to_user_data)
+  
+  # Create a data/saved directory (unless it already exists)
+  dir.create(dir_to_save, recursive = TRUE, showWarnings = FALSE)
+
+  # Save object as RDS
+  saveRDS(d, file.path(dir_to_save, file_name))
+} else {
+  d <- readRDS(file.path(dir_to_save, file_name))
+}
 ```
 
+With the above, you can rerun your code multiple times but will only have to wait for the full reading of data once.
 
-### Structure of the user list 
+## Structure of the user list 
 
-It is important to understand is the structure of the list of user data returned by `read_all()`. Let's take a quick look:
+It is important to understand is the structure of the list of user data returned by `read_all()`.
+
+**It is a list**
 
 ```{r}
-class(d)
-length(d)
+is.list(d)
+```
+
+**Each element contains information about a single user/participant**
+
+```{r}
+cat("Data is available for", length(d), "participants:", names(d))
+```
+
+**Information for each participant is a list**
+
+```{r}
+sapply(d, is.list)
+```
+
+**Each participant list contains three data frames**
+
+```{r}
+user_1 <- d[[1]]
+cat("Each user contains", length(user_1), "data frames:", names(user_1), "\n\n")
+sapply(user_1, is.data.frame)
+```
+
+These three data frames each contain different information:
+
+- `session` contains session-level information like the user id and time the game started
+- `events` contains timestamped logs of discrete events, like collisions, or the start/end of events.
+- `streams` contains timestamped logs of variables collected every frame like the accelerator value.
+
+For more information, please read the vignette, ["Reading log files"](reading.html).
+
+# Working with the data
+
+adapter provides a number of functions to support working with the data. This section will demonstrate their uses.
+
+## Use the tidyverse
+
+The adapter functions follow the philosophy of, and are best used in conjunction with, packages in the [tidyverse](http://tidyverse.org/). From here, we will be using tidyverse functions, which can be loaded as follows:
+
+```{r, message = F, warning=F}
+# install.packages("tidyverse")  # Install if needed
+library(tidyverse)
+```
+
+It is recommended that tidyverse be loaded in your scripts.
+
+## Getting drivers or drones
+
+You'll often want to separate data belonging to participants who were drivers or, less commonly, who were drone operators. Two functions are provided to handle these tasks: `get_drivers()` and `get_drones()`. Both functions take a list of user data and return a list in the same structure, but only with participants of the particular role.
+
+For example:
+
+```{r}
+drivers <- get_drivers(d)
+drones  <- get_drones(d)
+
+cat("There were", length(drivers), "drivers (", names(drivers), ") and", length(drones), "drone operator(s) (", names(drones), ")")
+```
+
+## Binding a particular data frame
+
+It's often the case that you will want to get a single data frame that contains the information for all participants (e.g., `session` or `streams`). adapter provides the function `bind_tbl()` to support this. To use it, you must specify your list of user data and the name of which data frame you want to bind (without quotes). For example:
+
+```{r}
+bind_tbl(d, session)
+```
+
+Here's an example of using `bind_tbl()` in combination with `get_drivers()` and dplyr functions (in tidyverse) to count the number of collisions each driver had:
+
+```{r}
+# Get events for all drivers
+driver_events <- d %>% 
+  get_drivers() %>% 
+  bind_tbl(events)
+
+# Count number collisions per driver
+driver_events %>% 
+  group_by(uid) %>% 
+  summarise(n_collisions = sum(event == "collision"))
 ```
 
 
