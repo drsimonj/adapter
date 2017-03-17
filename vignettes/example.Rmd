@@ -196,8 +196,8 @@ driver_events <- d %>%
 
 # Count number collisions per driver
 driver_events %>% 
-  filter(event == "collision") %>% 
-  count(uid)
+  group_by(uid) %>% 
+  summarise(n_collisions = sum(event == "collision"))
 ```
 
 
