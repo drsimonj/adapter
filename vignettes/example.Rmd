@@ -165,6 +165,12 @@ library(tidyverse)
 
 It is recommended that tidyverse be loaded in your scripts.
 
+For further plots being created in this vignette, a minimal theme will be set:
+
+```{r}
+theme_set(theme_minimal())
+```
+
 ## Getting drivers or drones
 
 You'll often want to separate data belonging to participants who were drivers or, less commonly, who were drone operators. Two functions are provided to handle these tasks: `get_drivers()` and `get_drones()`. Both functions take a list of user data and return a list in the same structure, but only with participants of the particular role.
@@ -190,6 +196,89 @@ bind_tbl(d, session)
 
 This section contains examples of working with the sim data to accomplish various tasks.
 
+### Mapping routes
+
+This example demonstrates how to plot the routes taken by each driver, overliad with the intended route. This is useful for explaining how the laps worked, as well as for identifying deviations from the intended route.
+
+Mapping the intended routes is made simple because adapter comes with a data object containing information about the `waypoints` for each lap:
+
+```{r}
+waypoints
+```
+
+Each row of this tibble contains the lap number, and x and z coordinates of a waypoint (intended turn) in the simulation. You can read more detailed information on the help page by running `?waypoints`. With the added knowledge that laps always started and ended at the same point (qpproximately x = 600, z = 200), the intended route can be plotted using `waypoints` as follows:
+
+```{r, fig.width=7.5}
+ggplot(waypoints, aes(x = x, y = z)) +
+  # Draw route path between waypoints
+  geom_path(colour = "grey", size = 3, lineend = "round", alpha = .7) +
+  # Draw arrow indicating beginning of each lap
+  annotate("segment", x = 600, xend = 600, y = 200, yend = 300, color = "black", alpha = .5,
+           arrow = arrow(type = "closed", angle = 30, length = unit(.1, "inches"))) +
+  # Split routes across facets
+  facet_wrap(~ lap, nrow = 1) +
+  # Ensure x and y scales are equally spaced
+  coord_equal() +
+  # Provide title information
+  ggtitle("Drivers' planned routes on each city lap")
+```
+
+The following challenge is to extract driver's actual routes The information can be obtained using `bind_tbl()` in combination with `get_drivers()` and dplyr and tidyr functions (in tidyverse):
+
+```{r, fig.width=7.5}
+# Get drivers' position information at each frame
+# - `position` is a 3-element vector of the x,y,z coordinates
+driver_positions <- d %>% 
+  get_drivers() %>% 
+  bind_tbl(streams) %>% 
+  select(uid, lap, time, position)
+
+driver_positions
+
+# Extract the x and z coordinates at each frame
+driver_positions <- driver_positions %>% 
+  mutate(x = map_dbl(position, ~ .[1]),
+         z = map_dbl(position, ~ .[3]))
+
+driver_positions
+
+# Plot these paths
+ggplot(driver_positions, aes(x = x, y = z)) +
+  geom_path(aes(color = uid), alpha = .4) +
+  facet_wrap(~ lap, nrow = 1) +
+  coord_equal() +
+  ggtitle("Drivers' routes on each city lap")
+```
+
+Here's an example combining these plots (seeing all drivers as the same colour):
+
+```{r, fig.width=7.5}
+ggplot(waypoints, aes(x = x, y = z)) +
+  # Draw waypoint-defined route
+  geom_path(colour = "grey", size = 3, lineend = "round", alpha = .7) +
+  annotate("segment", x = 600, xend = 600, y = 200, yend = 300, color = "black", alpha = .5,
+           arrow = arrow(type = "closed", angle = 30, length = unit(.1, "inches"))) +
+  # Overlay drivers' routes
+  geom_path(data = driver_positions, aes(group = uid), alpha = .2, color = "dodgerblue") +
+  # Plot-general aspects
+  facet_wrap(~ lap, nrow = 1) +
+  coord_equal() +
+  ggtitle("Overlay of drivers' routes on each city lap",
+           subtitle = "Grey line shows intended route\nAll laps start and end at x = 600, z = 200")
+```
+
+### Counting numbers of drivers and drones
+
+This demonstrates a method for counting the number of drivers and drone operators:
+
+```{r}
+# Bind the session tibbles
+sessions <- bind_tbl(d, session)
+
+# Print numbers of drivers and drones
+sessions %>% count(role)
+```
+
 ### Counting the number of collisions per driver
 
 Here's an example of using `bind_tbl()` in combination with `get_drivers()` and dplyr functions (in tidyverse) to count the number of collisions each driver had:
@@ -206,6 +295,8 @@ driver_events %>%
   summarise(n_collisions = sum(event == "collision"))
 ```
 
+### Calculating brake variability on black ice per lap, per driver
 
+This example demonstrates a method for calculating variance in the brake use during the black ice event, for each lap, for each driver.
 
 
