@@ -186,6 +186,12 @@ It's often the case that you will want to get a single data frame that contains 
 bind_tbl(d, session)
 ```
 
+## Worked examples
+
+This section contains examples of working with the sim data to accomplish various tasks.
+
+### Counting the number of collisions per driver
+
 Here's an example of using `bind_tbl()` in combination with `get_drivers()` and dplyr functions (in tidyverse) to count the number of collisions each driver had:
 
 ```{r}
