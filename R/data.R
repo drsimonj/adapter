@@ -13,9 +13,10 @@
 #'   \item{x}{x-coordinate in the simulated world. Entire world spanned from 0
 #'   to 1200, with intersections and corners being found at 200 to 1000 in
 #'   increments of 200.}
-#'   \item{y}{y-coordinate in the simulated world. Entire world spanned from 0
+#'   \item{z}{z-coordinate in the simulated world. Entire world spanned from 0
 #'   to 1200, with intersections and corners being found at 200 to 1000 in
-#'   increments of 200.}
+#'   increments of 200. This is z rather than y, because y in the 3D environment
+#'   defined by Unity indicates upwards (i.e., towards the sky)}
 #' }
 "waypoints"
 
