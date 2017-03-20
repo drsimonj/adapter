@@ -1,5 +1,5 @@
 ---
-title: "Typical-use Example"
+title: "Worked Examples"
 author: "Dr Simon Jackson"
 date: "`r Sys.Date()`"
 output:
@@ -11,7 +11,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette walks through the key functions and features of the adapter package, and provides some demonstration cases.
+This vignette walks through the key functions and features of the adapter package, and provides worked examples that demonstrate the use of adapter in a proper analysis setting.
 
 # Installation and loading
 
@@ -34,7 +34,7 @@ Assuming the log files are structured appropriately, read the data into R using 
 ```{r, eval = F}
 # Define a path to the top-level log file directory.
 # The code shown here is specific to this example document.
-# You will need to use your own (e.g., path_to_user_data <- "data/")
+# You will need to use your own (e.g., path_to_user_data <- "data/...")
 baseLoc <- system.file(package = "adapter")
 extPath <- file.path(baseLoc, "extdata")
 path_to_user_data <- file.path(extPath, "eg_user_list/")
@@ -88,8 +88,8 @@ It's good practice to bundle all of these components together at the top of your
 dir_to_save <- "data/save/"
 file_name <- "saved_user_list.rds"
 
-# If the saved object doesn't exist, then create the directory (if needed) and
-# save the object
+# If the saved object doesn't exist, read is all data, create the directory (if 
+# needed), and save the object. Otherwise, read in the saved object.
 if(!file.exists(file.path(dir_to_save, file_name))) {
   
   # ** Replace these lines with a path to YOUR data directory **
@@ -114,7 +114,7 @@ With the above, you can rerun your code multiple times but will only have to wai
 
 ## Structure of the user list 
 
-It is important to understand is the structure of the list of user data returned by `read_all()`.
+It is important to understand the structure of the list of user data returned by `read_all()`.
 
 **It is a list**
 
@@ -165,9 +165,8 @@ library(tidyverse)
 
 It is recommended that tidyverse be loaded in your scripts.
 
-For further plots being created in this vignette, a minimal theme will be set:
-
-```{r}
+```{r, echo = F}
+# Quietly Set theme
 theme_set(theme_minimal())
 ```
 
@@ -181,7 +180,8 @@ For example:
 drivers <- get_drivers(d)
 drones  <- get_drones(d)
 
-cat("There were", length(drivers), "drivers (", names(drivers), ") and", length(drones), "drone operator(s) (", names(drones), ")")
+cat("There were", length(drivers), "drivers (", names(drivers),
+    ") and", length(drones), "drone operator(s) (", names(drones), ")")
 ```
 
 ## Binding a particular data frame
@@ -198,7 +198,7 @@ This section contains examples of working with the sim data to accomplish variou
 
 ### Mapping routes
 
-This example demonstrates how to plot the routes taken by each driver, overliad with the intended route. This is useful for explaining how the laps worked, as well as for identifying deviations from the intended route.
+This example demonstrates how to plot the routes taken by each driver, overlaid with the intended route. This is useful for explaining how the laps worked, as well as for identifying deviations from the intended route.
 
 Mapping the intended routes is made simple because adapter comes with a data object containing information about the `waypoints` for each lap:
 
@@ -206,7 +206,7 @@ Mapping the intended routes is made simple because adapter comes with a data obj
 waypoints
 ```
 
-Each row of this tibble contains the lap number, and x and z coordinates of a waypoint (intended turn) in the simulation. You can read more detailed information on the help page by running `?waypoints`. With the added knowledge that laps always started and ended at the same point (qpproximately x = 600, z = 200), the intended route can be plotted using `waypoints` as follows:
+Each row of this tibble contains the lap number, and x and z coordinates of a waypoint (intended turn) in the simulation. You can read more detailed information on the help page by running `?waypoints`. With the added knowledge that laps always started and ended at the same point (approximately x = 600, z = 200), the intended route can be plotted using `waypoints` as follows:
 
 ```{r, fig.width=7.5}
 ggplot(waypoints, aes(x = x, y = z)) +
@@ -240,7 +240,11 @@ driver_positions <- driver_positions %>%
   mutate(x = map_dbl(position, ~ .[1]),
          z = map_dbl(position, ~ .[3]))
 
-driver_positions
+# Make sure to order by time, per driver, so path is plotted correctly
+driver_positions <- driver_positions %>% 
+  arrange(uid, time)
+  
+driver_positions  
 
 # Plot these paths
 ggplot(driver_positions, aes(x = x, y = z)) +
@@ -295,8 +299,40 @@ driver_events %>%
   summarise(n_collisions = sum(event == "collision"))
 ```
 
-### Calculating brake variability on black ice per lap, per driver
+### Calculating steering variability on black ice per lap, per driver
 
-This example demonstrates a method for calculating variance in the brake use during the black ice event, for each lap, for each driver.
+This example demonstrates a method for calculating variance in the steering wheel use during the black ice event, for each lap, for each driver.
+
+```{r}
+# Get streams tibble for all drivers
+streams <- d %>% 
+  get_drivers() %>% 
+  bind_tbl(streams)
+
+# Refine to variables of interest
+streams <- streams %>%
+  select(uid, lap, time, input_horizontal, ice)
+
+# Filter to only keep rows when drivers were on black ice
+streams <- streams %>%
+  filter(ice)
+
+streams
+
+# Summarise to compute variance of brake during each black ice event (per lap)
+steer_on_ice <- streams %>%
+  group_by(uid, lap) %>%
+  summarise(steer_var = var(input_horizontal))
+
+steer_on_ice
+
+# Plot the results
+ggplot(steer_on_ice, aes(x = lap, y = steer_var)) +
+  geom_path(aes(color = uid)) +
+  geom_point(size = 4) +
+  labs(x = "Lap number", y = "Steering Variance") +
+  ggtitle("Driver's steering variance during the black ice event")
+```
+
 
 
