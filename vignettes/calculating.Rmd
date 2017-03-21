@@ -21,8 +21,7 @@ To demonstrate, we'll use a sample set of user log files.
 
 ```{r, message = F}
 # Create path to all user data (this is specific to this document, you'll need to create your own)
-#path_to_user_data <- system.file("extdata", "eg_user_list", package = "adapter")
-path_to_user_data <- "example_data/eg_user_list/"
+path_to_user_data <- system.file("extdata", "eg_user_list", package = "adapter")
 
 # Load adapter package and read all user's log files
 library(adapter)
