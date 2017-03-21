@@ -18,4 +18,3 @@ A user data object or NULL.
 Given a particular user and a full list of all users' data, return the data
 for the particular user's teammate.
 }
-

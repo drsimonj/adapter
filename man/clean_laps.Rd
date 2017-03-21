@@ -23,4 +23,3 @@ For driver data, add a `lap` number column to the events and streams tibbles
 and remove all data that precedes the start of the first lap, and comes after
 the end of the last lap.
 }
-

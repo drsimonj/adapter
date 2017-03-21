@@ -16,4 +16,3 @@ if the file does not exist}
 Take various strings that combine to make a file path and check whether that
 file exists. If it does, return TRUE. If not, return the value return_if_not.
 }
-

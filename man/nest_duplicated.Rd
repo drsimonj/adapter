@@ -21,4 +21,3 @@ is replicated and suffixed with .x, .y, .x.x, and so on. This function
 converts any such variables into a single variable with all original values
 combined into a list.
 }
-

@@ -24,4 +24,3 @@ after reading, saves a properly formatted .rds file which can be reloaded. On
 future uses of this function, the .rds file can be loaded instead of
 re-reading all of the simulation data.
 }
-

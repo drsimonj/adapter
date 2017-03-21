@@ -17,4 +17,3 @@ list of (numeric) vector(s)
 \description{
 Convert Unity Vector3 to (numeric) vector
 }
-

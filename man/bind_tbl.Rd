@@ -28,4 +28,3 @@ bind_tbl(d, events)
 bind_tbl(d, streams)
 }
 }
-

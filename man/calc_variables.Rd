@@ -20,4 +20,3 @@ event is happening via \code{\link{calc_anyevent}}}
 \description{
 A wrapper function to apply variable calculation functions to a user list
 }
-

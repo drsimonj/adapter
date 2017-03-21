@@ -21,4 +21,3 @@ Function to calculate whether any event is happening at a given time point.
 This is a cenvenience instead of constantly writing things like `if (is | fog
 | ...)`
 }
-

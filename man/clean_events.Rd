@@ -21,4 +21,3 @@ Add a boolean column for each planned event to event and stream tibbles. Will
 be TRUE whenever the driver within a team was within the boundaries of the
 trigger box collider defining an event's area.
 }
-

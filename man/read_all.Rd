@@ -20,4 +20,3 @@ List of user log-file data lists
 \description{
 Read all users logs from a data directory
 }
-

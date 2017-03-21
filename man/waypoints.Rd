@@ -27,4 +27,3 @@ intersections or an L-shaped section of the road that appears on the
 outer-most sections.
 }
 \keyword{datasets}
-

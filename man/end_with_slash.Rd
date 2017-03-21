@@ -17,4 +17,3 @@ String of path with "/" on end
 Check if a character string has a slash ("/") on the end. If not, append one
 and return.
 }
-

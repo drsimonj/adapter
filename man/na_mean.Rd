@@ -25,4 +25,3 @@ When computing the mean of a vector and removing missing values with na.rm =
 TRUE, this results in NaN if all values were NA. This function handles such
 occassions by returning NA instead.
 }
-

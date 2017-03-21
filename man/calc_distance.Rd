@@ -17,4 +17,3 @@ The user object with a distance column in the streams tibble if a
 Take a user object and use the position data to calculate the distance in the
 sim world they travelled since the last recorded time point.
 }
-
