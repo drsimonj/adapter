@@ -1,0 +1,275 @@
+---
+title: "Worked Examples"
+author: "Dr Simon Jackson"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Worked examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette walks through the key functions and features of the adapter package, and provides worked examples that demonstrate the use of adapter in a proper analysis setting.
+
+# Installation and loading
+
+Make sure that adapter is installed. For installation instructions, please read the vignette, ["Getting started"](getting.started.html).
+
+Once installed, load adapter to make use of it:
+
+```{r}
+library(adapter)
+```
+
+# Reading data
+
+You will almost always begin by reading in the simulation log file data. This is best done by having the data stored in a specific directory structure. For more information about how to structure data or how to handle cases when the data is not structured this way, please read the vignette, ["Reading log files"](reading.html).
+
+Assuming the log files are structured appropriately, read the data into R using `read_or_load()` as demonstrated below.
+
+**WARNING: reading the data can take a long time.**
+
+```{r, eval = F}
+d <- read_or_load()
+```
+```{r, echo = F, message = F, warning = F}
+path_to_user_data <- system.file("extdata", "eg_user_list", package = "adapter")
+d <- read_or_load("saved/saved_user_list.rds", path_to_user_data)
+```
+
+By using `read_or_load()`, you will read in the data as a list object in a convenient way. Important checks of the data coding are made (e.g., that there is only one driver and one or no drone operators per team, and that there aren't any duplicate unique ids). Other useful preparation and variable calculations occur automatically. The data will also be saved as a properly formatted .RDS object, meaning you can call `read_or_load()` in the future and quickly reload the file without waiting for all the data to be read again.
+
+`read_or_load()` provides an interactive guide by default. If you've used this function before to read in the data and save it as an RDS, you can save some time by providing the function with a path to the saved RDS file. This will avoid the interactive guide and load the data automatically. For example:
+
+```{r, eval = F}
+d <- read_or_load("path/to/saved/rds_file.rds")
+```
+
+For more detailed information about this, please read the vignette, ["Reading log files"](reading.html).
+
+## Structure of the user list 
+
+It is important to understand the structure of the list of user data returned by `read_all()`.
+
+**It is a list**
+
+```{r}
+is.list(d)
+```
+
+**Each element contains information about a single user/participant**
+
+```{r}
+cat("Data is available for", length(d), "participants:", names(d))
+```
+
+**Information for each participant is a list**
+
+```{r}
+sapply(d, is.list)
+```
+
+**Each participant list contains three data frames**
+
+```{r}
+user_1 <- d[[1]]
+cat("Each user contains", length(user_1), "data frames:", names(user_1), "\n\n")
+sapply(user_1, is.data.frame)
+```
+
+These three data frames each contain different information:
+
+- `session` contains session-level information like the user id and time the game started
+- `events` contains timestamped logs of discrete events, like collisions, or the start/end of events.
+- `streams` contains timestamped logs of variables collected every frame like the accelerator value.
+
+For more information, please read the vignette, ["Reading log files"](reading.html).
+
+# Working with the data
+
+adapter provides a number of functions to support working with the data. This section will demonstrate their uses.
+
+## Use the tidyverse
+
+The adapter functions follow the philosophy of, and are best used in conjunction with, packages in the [tidyverse](http://tidyverse.org/). From here, we will be using tidyverse functions, which can be loaded as follows:
+
+```{r, message = F, warning=F}
+# install.packages("tidyverse")  # Install if needed
+library(tidyverse)
+```
+
+It is recommended that tidyverse be loaded in your scripts.
+
+```{r, echo = F}
+# Quietly Set theme
+theme_set(theme_minimal())
+```
+
+## Getting drivers or drones
+
+You'll often want to separate data belonging to participants who were drivers or, less commonly, who were drone operators. Two functions are provided to handle these tasks: `get_drivers()` and `get_drones()`. Both functions take a list of user data and return a list in the same structure, but only with participants of the particular role.
+
+For example:
+
+```{r}
+drivers <- get_drivers(d)
+drones  <- get_drones(d)
+
+cat("There were", length(drivers), "drivers (", names(drivers),
+    ") and", length(drones), "drone operator(s) (", names(drones), ")")
+```
+
+## Binding a particular data frame
+
+It's often the case that you will want to get a single data frame that contains the information for all participants (e.g., `session` or `streams`). adapter provides the function `bind_tbl()` to support this. To use it, you must specify your list of user data and the name of which data frame you want to bind (without quotes). For example:
+
+```{r}
+bind_tbl(d, session)
+```
+
+## Worked examples
+
+This section contains examples of working with the sim data to accomplish various tasks.
+
+### Mapping routes
+
+This example demonstrates how to plot the routes taken by each driver, overlaid with the intended route. This is useful for explaining how the laps worked, as well as for identifying deviations from the intended route.
+
+Mapping the intended routes is made simple because adapter comes with a data object containing information about the `waypoints` for each lap:
+
+```{r}
+waypoints
+```
+
+Each row of this tibble contains the lap number, and x and z coordinates of a waypoint (intended turn) in the simulation. You can read more detailed information on the help page by running `?waypoints`. With the added knowledge that laps always started and ended at the same point (approximately x = 600, z = 200), the intended route can be plotted using `waypoints` as follows:
+
+```{r, fig.width=7.5}
+ggplot(waypoints, aes(x = x, y = z)) +
+  # Draw route path between waypoints
+  geom_path(colour = "grey", size = 3, lineend = "round", alpha = .7) +
+  # Draw arrow indicating beginning of each lap
+  annotate("segment", x = 600, xend = 600, y = 200, yend = 300, color = "black", alpha = .5,
+           arrow = arrow(type = "closed", angle = 30, length = unit(.1, "inches"))) +
+  # Split routes across facets
+  facet_wrap(~ lap, nrow = 1) +
+  # Ensure x and y scales are equally spaced
+  coord_equal() +
+  # Provide title information
+  ggtitle("Drivers' planned routes on each city lap")
+```
+
+The following challenge is to extract driver's actual routes The information can be obtained using `bind_tbl()` in combination with `get_drivers()` and dplyr and tidyr functions (in tidyverse):
+
+```{r, fig.width=7.5}
+# Get drivers' position information at each frame
+# - `position` is a 3-element vector of the x,y,z coordinates
+driver_positions <- d %>% 
+  get_drivers() %>% 
+  bind_tbl(streams) %>% 
+  select(uid, lap, time, position)
+
+driver_positions
+
+# Extract the x and z coordinates at each frame
+driver_positions <- driver_positions %>% 
+  mutate(x = map_dbl(position, ~ .[1]),
+         z = map_dbl(position, ~ .[3]))
+
+# Make sure to order by time, per driver, so path is plotted correctly
+driver_positions <- driver_positions %>% 
+  arrange(uid, time)
+  
+driver_positions  
+
+# Plot these paths
+ggplot(driver_positions, aes(x = x, y = z)) +
+  geom_path(aes(color = uid), alpha = .4) +
+  facet_wrap(~ lap, nrow = 1) +
+  coord_equal() +
+  ggtitle("Drivers' routes on each city lap")
+```
+
+Here's an example combining these plots (seeing all drivers as the same colour):
+
+```{r, fig.width=7.5}
+ggplot(waypoints, aes(x = x, y = z)) +
+  # Draw waypoint-defined route
+  geom_path(colour = "grey", size = 3, lineend = "round", alpha = .7) +
+  annotate("segment", x = 600, xend = 600, y = 200, yend = 300, color = "black", alpha = .5,
+           arrow = arrow(type = "closed", angle = 30, length = unit(.1, "inches"))) +
+  # Overlay drivers' routes
+  geom_path(data = driver_positions, aes(group = uid), alpha = .2, color = "dodgerblue") +
+  # Plot-general aspects
+  facet_wrap(~ lap, nrow = 1) +
+  coord_equal() +
+  ggtitle("Overlay of drivers' routes on each city lap",
+           subtitle = "Grey line shows intended route\nAll laps start and end at x = 600, z = 200")
+```
+
+### Counting numbers of drivers and drones
+
+This demonstrates a method for counting the number of drivers and drone operators:
+
+```{r}
+# Bind the session tibbles
+sessions <- bind_tbl(d, session)
+
+# Print numbers of drivers and drones
+sessions %>% count(role)
+```
+
+### Counting the number of collisions per driver
+
+Here's an example of using `bind_tbl()` in combination with `get_drivers()` and dplyr functions (in tidyverse) to count the number of collisions each driver had:
+
+```{r}
+# Get events for all drivers
+driver_events <- d %>% 
+  get_drivers() %>% 
+  bind_tbl(events)
+
+# Count number collisions per driver
+driver_events %>% 
+  group_by(uid) %>% 
+  summarise(n_collisions = sum(event == "collision"))
+```
+
+### Calculating steering variability on black ice per lap, per driver
+
+This example demonstrates a method for calculating variance in the steering wheel use during the black ice event, for each lap, for each driver.
+
+```{r, fig.width = 6}
+# Get streams tibble for all drivers
+streams <- d %>% 
+  get_drivers() %>% 
+  bind_tbl(streams)
+
+# Refine to variables of interest
+streams <- streams %>%
+  select(uid, lap, time, input_horizontal, ice)
+
+# Filter to only keep rows when drivers were on black ice
+streams <- streams %>%
+  filter(ice)
+
+streams
+
+# Summarise to compute variance of brake during each black ice event (per lap)
+steer_on_ice <- streams %>%
+  group_by(uid, lap) %>%
+  summarise(steer_var = var(input_horizontal))
+
+steer_on_ice
+
+# Plot the results
+ggplot(steer_on_ice, aes(x = lap, y = steer_var)) +
+  geom_path(aes(color = uid)) +
+  geom_point(size = 4) +
+  labs(x = "Lap number", y = "Steering Variance") +
+  ggtitle("Drivers' steering variance during the black ice event")
+```
+
+
+

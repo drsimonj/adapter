@@ -1,0 +1,176 @@
+---
+title: "Reading log files"
+author: "Dr Simon Jackson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Reading log files}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette will describe how to read a user's log files using [functions provided in the adapter package](#functions-for-reading-log-files).
+
+## Log files and folders
+
+At the time this vignette was written, the adaptability simulation generated users' log files with particular structures and formats. It is important to understand this, as it guides how the reading functions work.
+
+### How files and folders are arranged and formatted
+
+A group of users' log-files are structured as follows:
+
+- `data/`: a top-level data folder that contains all relevant data. The name of this directory can be changed.
+    - `yymmddhh_group/`: a folder **for each group** (dyad or individual) taking part in a given experimental session. Format of folder name is last two digits of the year, month, day, hour (24-hour format), an underscore, and the group number. For example, `16101114_1/` is a directory containing data for the first group (`_1`) in the session completed at 2pm (`14` for 1400hr) on 11/10/16 (`161011`). The reason for this format is that it keeps folders in proper date order.
+        - `logs/`: a folder containing the log files for users (one or two) who were in the particular group. The name of this directory CANNOT be changed.
+            - `yymmddhh_group-seat_timestamp/`: a folder **for each user** in the group. Format is same as group folder, followed by the seat number (e.g., `-g1` refers to Gunner 1; these can be `g1`, `g2`, `d1`, `d2`), and an epoch timestamp. The seat number is relevant because it defines the user's role in the simulation. Users seated in Driver 2 (`d2`) or Gunner 2 (`g2`), which are in the CODES Simulation Lab Alpha, were drivers. Users seated in Driver 1 (`d1`) or Gunner 1 (`g1`), which are in the CODES Simulation Lab Beta, were drone operators.
+
+Within this lowest level directory will be a single user's log files. This directory of log files has three things in it:
+
+- A file containing session information: [`session.tsv`](#session-file)
+- A file containing logs of discrete events: [`events.tsv`](#events-file)
+- A directory (folder) of variables logged in a streaming fashion: [`streams/`](#stream-files)
+
+All log files are created in a tab-separated values (.tsv) format without headers. This helps to minimise file size and maximise compatability across software packages.
+
+### Session file
+
+The session file (`session.tsv`) contains general information about the session. For example, the local time when the simulation was started, and the user's id. It is effectively a key-value table. One column contains variables names, and a second contains its value. This is converted to a wide format after being read.
+
+### Events file
+
+The events file (`events.tsv`) contains a log of discrete events that occur within the simulation. For example, the time at which a new lap begins, or every time the driver collides with an object, and so on. Each row logs a single event. Each row contains at least two columns. The first column is a timestamp of when the event occured (see [timestamp format](#timestamp-format)). The second column is the event name. Any other values that appear beyond these two columns provides some additional information about the event.
+
+### Stream directory and files
+
+The `streams/` directory contains multiple log files (also `.tsv`). Each log file in `streams/` logs a particular variable every single frame of the simulation. These files are, therefore, reserved for variables like the value of the accelerator, the steering angle, the velocity of the car, and so on. In these files, each row represents a variable's value at a particular point in time, and contains two columns. The first is a timestamp (see [timestamp format](#timestamp-format)). The second is the variable's value. The name of the file indicates the variable that is being logged.
+
+### Timestamp format
+
+Timestamps are generally formatted to be epoch time to 100th of a millisecond. Therefore, to convert this to regular epoch time (or some other time stamp), divide it by 100 (to get to millisecond epoch time), and do regular conversion.
+
+## Functions for reading log files
+
+The adapter package provides the following functions for reading log files:
+
+- [`read_or_load()`](#always-try-to-use-read_or_load)
+- [`read_all()`](#read-everything-with-read_all)
+- [`read_logs()`](#read-a-user-with-read_logs)
+- [`read_session()`](#when-read_logs-doesnt-work)
+- [`read_events()`](#when-read_logs-doesnt-work)
+- [`read_stream()`](#when-read_logs-doesnt-work)
+- [`read_streams()`](#when-read_logs-doesnt-work)
+
+We'll cover each of these in relevant sections below.
+
+### Always try to use `read_or_load()`
+
+`read_or_load()` is an all-in-one solution for reading in new data, or loading previously saved data. For reading alone, [`read_all()`](#read-everything-with-read_all) is the function to use. However, reading can take a considerable amount of time, and it's impractical to do this every time. Instead, `read_or_load()` does the following:
+
+- Check if data has been previously read in and saved as a properly formatted .RDS file
+- If so, reload the previously saved file
+- If not, read in raw data (which takes time)
+- Save the raw data as a properly foramtted .RDS file for future uses
+- Return the resulting data
+
+To add to the convenience of having these steps handled for you, a completely interactive guide is available if you do not want to specify the paths to files. That is, you can simply run `read_or_load()` and follow the steps! As you're going to want to save the results, it's advisable to run the following:
+
+```{r, eval = F}
+d <- read_or_load()
+```
+
+As the guidance is relatively straight forward, this vignette will not demonstrate the outcomes of this function. Instead, it is recommended to read the sections below so as you become familiar with the reading of raw data (which you must do at least once).
+
+### Read everything with `read_all()`
+
+In general, if you're not using `read_or_load()`, you'll use `read_all()`. This function takes a path to the top-level directory containing all user log files. In the above sections, this is referred to as `data/`, under which there are folders in the format `yymmddhh_group/` and so on. The function seeks out the individual user log file directories and applies [`read_logs()`](#read-a-user-with-read_logs) to each. The result is a list of "user" objects returned by [`read_logs()`](#read-a-user-with-read_logs), which is described in detail below.
+
+`read_all()` goes further with this list, adding the `role` of each user to the session tibble, and appending the relevant `"driver"` or `"drone"` class. An option to `clean` all users' data is also available, and set to `TRUE` by default. When `TRUE`, `read_all()` will make use of the cleaning functions before returning the final list of user data. To learn more about these cleaning functions and how to implement them separately, please read the [Vignette on Cleaning log files](cleaning.html).
+
+Here is an example that demonstrates the use of `read_all()`:
+
+```{r, message = F}
+# Create path to all user data (this is specific to this document, you'll need to create your own)
+path_to_user_data <- system.file("extdata", "eg_user_list", package = "adapter")
+
+# Load adapter package and read all user's log files
+library(adapter)
+d <- read_all(path_to_user_data)
+
+# Examine the class of each user object
+sapply(d, class)
+```
+
+### Read a user with `read_logs()`
+
+In general, you'll use `read_all()`, but `read_logs()` is available for handling **a single user** if need be. This functions takes a path to a user's log file directory and, using the other four reading functions and their default values, returns a list of three tibbles (data frames):
+
+- `session`
+- `events`
+- `streams`
+
+To demonstrate, say I have a user's log files in the folder, `"eg_user_data/"`. We can read the user's data in as follows:
+
+```{r, message = F}
+# Create path to user's log-file directory (this is specific to this document, you'll need to create your own)
+path_to_user_data <- system.file("extdata", "eg_user_data", package = "adapter")
+
+# Load adapter package and read all user's log files
+library(adapter)
+d <- read_logs(path_to_user_data)
+```
+
+Let's examine this new object:
+
+```{r}
+# Object class
+class(d)
+
+# Classes of the objects contained in the list
+sapply(d, class)
+```
+
+Important things to notice about `d`:
+
+- It's a list, but also has a special class `"user"`. This is so we can apply special functions to it using the S3 class system in R. However, this generally doesn't affect our ability to treat `d` like any other list.
+- It contains three objects (`session`, `events`, `streams`), all of which are tibbles.
+
+Because `d` is a named list, we can examine each tibble using `$`:
+
+```{r}
+# The session tibble
+d$session
+
+# The events tibble
+d$events
+
+# The streams tibble
+d$streams
+```
+
+Check the earlier descriptions of each file to see how these tibbles correspond to the information that is logged for users.
+
+### When `read_logs()` doesn't work
+
+It is possible that you might encounter a situation where the default settings used by `read_logs()` do not do the trick! In this case, you would use the other read functions available to you.
+
+Each of the other four functions serves a more specific purpose. For example, `read_session()` is explicitly used for reading and formatting a `session.tsv` file. With these other read functions, you can explicitly define the directoy and file names, variable names, and so on.
+
+If you encounter a situation where you need to use these other functions, remember to bundle the results up into a list in the same format shown above created using `read_logs()`. The following example shows how you can do this (without making custom adjustments to the functions):
+
+```{r, message = F}
+# Read the session file
+session <- read_session(user_dir = path_to_user_data)
+
+# Read the events file
+events  <- read_events(user_dir = path_to_user_data)
+
+# Read the stream files
+streams <- read_all_streams(user_dir = path_to_user_data)
+
+# Combine results into a named list and add the "user class"
+l <- list(session = session, events = events, streams = streams)
+class(l) <- c("user", class(l))
+l
+```
+
+The above script shows how you can get more granual with your importing, as each of the functions above accepts various other arguments. To learn more about which arguments you can use, see the help page for these functions by running `?read_logs`.
