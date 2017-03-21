@@ -18,5 +18,6 @@ Imports:
     zoo
 RoxygenNote: 5.0.1
 Suggests: knitr,
-    rmarkdown
-VignetteBuilder: knitr
+    rmarkdown,
+    R.rsp
+VignetteBuilder: R.rsp
