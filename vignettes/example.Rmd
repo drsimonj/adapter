@@ -36,7 +36,7 @@ d <- read_or_load()
 ```
 ```{r, echo = F, message = F, warning = F}
 path_to_user_data <- system.file("extdata", "eg_user_list", package = "adapter")
-d <- read_or_load("data/save/saved_user_list.rds", path_to_user_data)
+d <- read_or_load("saved/saved_user_list.rds", path_to_user_data)
 ```
 
 By using `read_or_load()`, you will read in the data as a list object in a convenient way. Important checks of the data coding are made (e.g., that there is only one driver and one or no drone operators per team, and that there aren't any duplicate unique ids). Other useful preparation and variable calculations occur automatically. The data will also be saved as a properly formatted .RDS object, meaning you can call `read_or_load()` in the future and quickly reload the file without waiting for all the data to be read again.
