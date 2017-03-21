@@ -22,42 +22,42 @@ To demonstrate, we'll use a sample set of user log files.
 ```{r, message = F}
 # Create path to all user data (this is specific to this document, you'll need to create your own)
 path_to_user_data <- system.file("extdata", "eg_user_list", package = "adapter")
-print(path_to_user_data)
+
 # Load adapter package and read all user's log files
-#library(adapter)
-#d <- read_all(path_to_user_data, calculate = FALSE)  # Turn variable calculation off so that we can do it separately
+library(adapter)
+d <- read_all(path_to_user_data, calculate = FALSE)  # Turn variable calculation off so that we can do it separately
 ```
 
-<!-- We will use our list of user data, `d`, in forthcoming analyses. -->
+We will use our list of user data, `d`, in forthcoming analyses.
 
-<!-- For later comparisons, here is the data without variables calculated: -->
+For later comparisons, here is the data without variables calculated:
 
-<!-- ```{r} -->
-<!-- d -->
-<!-- ``` -->
+```{r}
+d
+```
 
-<!-- ## Functions for calculating variables -->
+## Functions for calculating variables
 
-<!-- The adapter package provides functions to calculate specific variables for a single user's data: -->
+The adapter package provides functions to calculate specific variables for a single user's data:
 
-<!-- - `calc_anyevent()` to create a boolean variable in events and streams tibbles indicating whether an event is taking place. -->
-<!-- - `calc_speed()` to calculate instantaneous speed in a driver's streams tibble from their velocity vectors. -->
-<!-- - `calc_distance()` to calculate the distance travelled in the sim world since the last time log from position vectors. -->
+- `calc_anyevent()` to create a boolean variable in events and streams tibbles indicating whether an event is taking place.
+- `calc_speed()` to calculate instantaneous speed in a driver's streams tibble from their velocity vectors.
+- `calc_distance()` to calculate the distance travelled in the sim world since the last time log from position vectors.
 
-<!-- The package also provides a wrapper function that will take an entire list of user log file data and run any or all of the specific functions: -->
+The package also provides a wrapper function that will take an entire list of user log file data and run any or all of the specific functions:
 
-<!-- - `calc_variables()` -->
+- `calc_variables()`
 
-<!-- This wrapper function is what you will use most often. -->
+This wrapper function is what you will use most often.
 
-<!-- ## Using `calc_variables()` -->
+## Using `calc_variables()`
 
-<!-- Pass a cleaned user list to `calc_variables()` to add the variables calculated by the specific variable functions: -->
+Pass a cleaned user list to `calc_variables()` to add the variables calculated by the specific variable functions:
 
-<!-- ```{r} -->
-<!-- calc_variables(d) -->
-<!-- ``` -->
+```{r}
+calc_variables(d)
+```
 
-<!-- For example, notice that the drivers now have a speed variable in their streams tibbles. -->
+For example, notice that the drivers now have a speed variable in their streams tibbles.
 
-<!-- Additional arguments allow you to disable the calculation of specific variables. For example, `calc_variables(d, speed = FALSE)` will not calculate the speed variable. -->
+Additional arguments allow you to disable the calculation of specific variables. For example, `calc_variables(d, speed = FALSE)` will not calculate the speed variable.
