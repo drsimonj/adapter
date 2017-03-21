@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Typical-use Example}
+  %\VignetteIndexEntry{Worked examples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -243,7 +243,7 @@ driver_events %>%
 
 This example demonstrates a method for calculating variance in the steering wheel use during the black ice event, for each lap, for each driver.
 
-```{r}
+```{r, fig.width = 6}
 # Get streams tibble for all drivers
 streams <- d %>% 
   get_drivers() %>% 
@@ -271,7 +271,7 @@ ggplot(steer_on_ice, aes(x = lap, y = steer_var)) +
   geom_path(aes(color = uid)) +
   geom_point(size = 4) +
   labs(x = "Lap number", y = "Steering Variance") +
-  ggtitle("Driver's steering variance during the black ice event")
+  ggtitle("Drivers' steering variance during the black ice event")
 ```
 
 
