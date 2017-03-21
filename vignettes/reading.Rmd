@@ -90,9 +90,7 @@ Here is an example that demonstrates the use of `read_all()`:
 
 ```{r, message = F}
 # Create path to all user data (this is specific to this document, you'll need to create your own)
-baseLoc <- system.file(package = "adapter")
-extPath <- file.path(baseLoc, "extdata")
-path_to_user_data <- file.path(extPath, "eg_user_list/")
+path_to_user_data <- system.file("extdata", "eg_user_list", package = "adapter")
 
 # Load adapter package and read all user's log files
 library(adapter)
@@ -114,9 +112,7 @@ To demonstrate, say I have a user's log files in the folder, `"eg_user_data/"`. 
 
 ```{r, message = F}
 # Create path to user's log-file directory (this is specific to this document, you'll need to create your own)
-baseLoc <- system.file(package = "adapter")
-extPath <- file.path(baseLoc, "extdata")
-path_to_user_data <- file.path(extPath, "eg_user_data/")
+path_to_user_data <- system.file("extdata", "eg_user_data", package = "adapter")
 
 # Load adapter package and read all user's log files
 library(adapter)

@@ -34,11 +34,8 @@ Assuming the log files are structured appropriately, read the data into R using 
 ```{r, eval = F}
 d <- read_or_load()
 ```
-
 ```{r, echo = F, message = F, warning = F}
-baseLoc <- system.file(package = "adapter")
-extPath <- file.path(baseLoc, "extdata")
-path_to_user_data <- file.path(extPath, "eg_user_list/")
+path_to_user_data <- system.file("extdata", "eg_user_list", package = "adapter")
 d <- read_or_load("data/save/saved_user_list.rds", path_to_user_data)
 ```
 
