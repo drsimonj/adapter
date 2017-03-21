@@ -89,7 +89,7 @@ Detailed vignettes are included with instructions on a range of function topics.
 browseVignettes("adapter")
 ```
 
-This will open an internet browser with a list of the available vignettes (including this one). In general, the first vignette you should read is "Reading log files", which you can open by clicking the "HTML" link. This vignette explains how to structure a directory of simulation-generated log files and read them into R.
+This will open an internet browser with a list of the available vignettes (including this one). In general, the first vignette you should read is "Worked examples", which you can open by clicking the "HTML" link. This vignette provides a walk through of getting an analysis started, with some worked examples, and links to other vignettes where necessary.
 
 ### Function documentation
 

@@ -50,8 +50,9 @@ Timestamps are generally formatted to be epoch time to 100th of a millisecond. T
 
 ## Functions for reading log files
 
-The adapter package provides five functions for reading log files:
+The adapter package provides the following functions for reading log files:
 
+- [`read_or_load()`](#always-try-to-use-read_or_load)
 - [`read_all()`](#read-everything-with-read_all)
 - [`read_logs()`](#read-a-user-with-read_logs)
 - [`read_session()`](#when-read_logs-doesnt-work)
@@ -61,9 +62,27 @@ The adapter package provides five functions for reading log files:
 
 We'll cover each of these in relevant sections below.
 
+### Always try to use `read_or_load()`
+
+`read_or_load()` is an all-in-one solution for reading in new data, or loading previously saved data. For reading alone, [`read_all()`](#read-everything-with-read_all) is the function to use. However, reading can take a considerable amount of time, and it's impractical to do this every time. Instead, `read_or_load()` does the following:
+
+- Check if data has been previously read in and saved as a properly formatted .RDS file
+- If so, reload the previously saved file
+- If not, read in raw data (which takes time)
+- Save the raw data as a properly foramtted .RDS file for future uses
+- Return the resulting data
+
+To add to the convenience of having these steps handled for you, a completely interactive guide is available if you do not want to specify the paths to files. That is, you can simply run `read_or_load()` and follow the steps! As you're going to want to save the results, it's advisable to run the following:
+
+```{r, eval = F}
+d <- read_or_load()
+```
+
+As the guidance is relatively straight forward, this vignette will not demonstrate the outcomes of this function. Instead, it is recommended to read the sections below so as you become familiar with the reading of raw data (which you must do at least once).
+
 ### Read everything with `read_all()`
 
-In general, you'll use `read_all()`. This function takes a path to the top-level directory containing all user log files. In the above sections, this is referred to as `data/`, under which there are folders in the format `yymmddhh_group/` and so on. The function seeks out the individual user log file directories and applies [`read_logs()`](#read-a-user-with-read_logs) to each. The result is a list of "user" objects returned by [`read_logs()`](#read-a-user-with-read_logs), which is described in detail below.
+In general, if you're not using `read_or_load()`, you'll use `read_all()`. This function takes a path to the top-level directory containing all user log files. In the above sections, this is referred to as `data/`, under which there are folders in the format `yymmddhh_group/` and so on. The function seeks out the individual user log file directories and applies [`read_logs()`](#read-a-user-with-read_logs) to each. The result is a list of "user" objects returned by [`read_logs()`](#read-a-user-with-read_logs), which is described in detail below.
 
 `read_all()` goes further with this list, adding the `role` of each user to the session tibble, and appending the relevant `"driver"` or `"drone"` class. An option to `clean` all users' data is also available, and set to `TRUE` by default. When `TRUE`, `read_all()` will make use of the cleaning functions before returning the final list of user data. To learn more about these cleaning functions and how to implement them separately, please read the [Vignette on Cleaning log files](cleaning.html).
 
