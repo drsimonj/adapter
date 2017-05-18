@@ -1,6 +1,6 @@
 Package: adapter
 Type: Package
-Version: 0.0.0.9000
+Version: 0.1.0
 Title: R package for working with data from the CODES Research Lab Adaptability
     simulation
 Description: In collaboration with the Defence Science and Technology Group
